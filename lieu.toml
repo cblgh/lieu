@@ -1,0 +1,27 @@
+[general]
+name = "Sweet Webring"
+# used by the precrawl command and linked to in /about route
+url = "https://example.com/"
+port = 10001
+
+[data]
+# the source file should contain the crawl command's output 
+source = "data/crawled.txt"
+# location & name of the sqlite database
+database = "data/searchengine.db"
+# contains words and phrases disqualifying scraped paragraphs from being presented in search results
+heuristics = "data/heuristics.txt"
+# aka stopwords, in the search engine biz: https://en.wikipedia.org/wiki/Stop_word
+wordlist = "data/wordlist.txt"
+
+[crawler]
+# manually curated list of domains, or the output of the precrawl command
+webring = "data/webring.txt"
+# domains that are banned from being crawled but might originally be part of the webring
+bannedDomains = "data/banned-domains.txt"
+# file suffixes that are banned from being crawled
+bannedSuffixes = "data/banned-suffixes.txt"
+# phrases and words which won't be scraped (e.g. if a contained in a link)
+boringWords = "data/boring-words.txt"
+# domains that won't be output as outgoing links
+boringDomains = "data/boring-domains.txt"
