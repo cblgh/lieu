@@ -60,7 +60,7 @@ func main() {
 	case "crawl":
         exists := util.CheckFileExists(config.Crawler.Webring)
         if !exists {
-            fmt.Printf("lieu: webring file %s does not exist\n", config.Data.Source)
+            fmt.Printf("lieu: webring file %s does not exist\n", config.Data.Webring)
             util.Exit()
         }
         sourceLen := len(util.ReadList(config.Crawler.Webring, "\n"))
