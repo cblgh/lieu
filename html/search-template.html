@@ -1,0 +1,22 @@
+<html lang="en">
+    <head>
+        <link href="/links/search.css" rel="stylesheet">
+        <title>{{ .Query }}—Lieu</title>
+    </head>
+    <body>
+        <a class="about-link" href="/about">About</a>
+        <h1><a href="/">Lieu</a></h1>
+        <form method="GET" class="search-container">
+            <input name="q" value="{{ .Query }}" class="search-box">
+            <button type="submit" class="search-button">👁</button>
+        </form>
+        <main>
+        {{ range .Pages }}
+            <div class="entry">
+                <a class="link" href="{{ .URL }}">{{ .Title }}</a>
+                <p>{{ .About }}</p>
+            </div>
+        {{ end }}
+        </main>
+    </body>
+</html>

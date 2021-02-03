@@ -1,0 +1,20 @@
+<html lang="en">
+    <head>
+        <link href="/links/search.css" rel="stylesheet">
+        <title>{{ .Title }}—Lieu</title>
+    </head>
+    <body>
+        <a class="about-link" href="/about">About</a>
+        <h1><a href="/">Lieu</a></h1>
+        <h2>{{ .Title }}</h2>
+        <main>
+            <ul>
+                {{ range .URLs }}
+                <li>
+                        <a class="link" href="{{ .URL }}">{{ .Title }}</a>
+                </li>
+                {{ end }}
+            </ul>
+        </main>
+    </body>
+</html>
