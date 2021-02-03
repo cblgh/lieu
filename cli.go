@@ -32,77 +32,77 @@ https://github.com/cblgh/lieu for more information.
 `
 
 func main() {
-    exists := util.CheckFileExists("lieu.toml")
-    if !exists {
-        fmt.Println("lieu: can't find config, saving an example config in the working directory")
-        util.WriteMockConfig()
-        fmt.Println("lieu: lieu.toml written to disk")
-        util.Exit()
-    }
+	exists := util.CheckFileExists("lieu.toml")
+	if !exists {
+		fmt.Println("lieu: can't find config, saving an example config in the working directory")
+		util.WriteMockConfig()
+		fmt.Println("lieu: lieu.toml written to disk")
+		util.Exit()
+	}
 	config := util.ReadConfig()
 
 	var cmd string
 	if len(os.Args) > 1 {
 		cmd = os.Args[1]
 	} else {
-		cmd = "search"
+		cmd = "help"
 	}
 
 	switch cmd {
 	case "help":
-        fmt.Println(help)
+		fmt.Println(help)
 	case "precrawl":
-        if config.General.URL == "https://example.com/" {
-            fmt.Println("lieu: the url is not set (example.com)")
-            util.Exit()
-        }
+		if config.General.URL == "https://example.com/" {
+			fmt.Println("lieu: the url is not set (example.com)")
+			util.Exit()
+		}
 		crawler.Precrawl(config)
 	case "crawl":
-        exists := util.CheckFileExists(config.Crawler.Webring)
-        if !exists {
-            fmt.Printf("lieu: webring file %s does not exist\n", config.Data.Webring)
-            util.Exit()
-        }
-        sourceLen := len(util.ReadList(config.Crawler.Webring, "\n"))
-        if sourceLen == 0 {
-            fmt.Printf("lieu: nothing to crawl; the webring file %s is empty\n", config.Data.Source)
-            util.Exit()
-        }
+		exists := util.CheckFileExists(config.Crawler.Webring)
+		if !exists {
+			fmt.Printf("lieu: webring file %s does not exist\n", config.Crawler.Webring)
+			util.Exit()
+		}
+		sourceLen := len(util.ReadList(config.Crawler.Webring, "\n"))
+		if sourceLen == 0 {
+			fmt.Printf("lieu: nothing to crawl; the webring file %s is empty\n", config.Crawler.Webring)
+			util.Exit()
+		}
 		crawler.Crawl(config)
 	case "ingest":
-        exists := util.CheckFileExists(config.Data.Source)
-        if !exists {
-            fmt.Printf("lieu: data source %s does not exist\n", config.Data.Source)
-            fmt.Println("lieu: try running `lieu crawl`")
-            util.Exit()
-        }
-        sourceLen := len(util.ReadList(config.Data.Source, "\n"))
-        if sourceLen == 0 {
-            fmt.Printf("lieu: nothing to ingest; data source %s is empty\n", config.Data.Source)
-            fmt.Println("lieu: try running `lieu crawl`")
-            util.Exit()
-        }
-        fmt.Println("lieu: creating a new database & initiating ingestion")
+		exists := util.CheckFileExists(config.Data.Source)
+		if !exists {
+			fmt.Printf("lieu: data source %s does not exist\n", config.Data.Source)
+			fmt.Println("lieu: try running `lieu crawl`")
+			util.Exit()
+		}
+		sourceLen := len(util.ReadList(config.Data.Source, "\n"))
+		if sourceLen == 0 {
+			fmt.Printf("lieu: nothing to ingest; data source %s is empty\n", config.Data.Source)
+			fmt.Println("lieu: try running `lieu crawl`")
+			util.Exit()
+		}
+		fmt.Println("lieu: creating a new database & initiating ingestion")
 		ingest.Ingest(config)
 	case "search":
-        exists := util.CheckFileExists(config.Data.Database)
-        if !exists {
-            util.DatabaseDoesNotExist(config.Data.Database)
-        }
+		exists := util.CheckFileExists(config.Data.Database)
+		if !exists {
+			util.DatabaseDoesNotExist(config.Data.Database)
+		}
 		interactiveMode(config.Data.Database)
 	case "host":
-        exists := util.CheckFileExists(config.Data.Database)
-        if !exists {
-            util.DatabaseDoesNotExist(config.Data.Database)
-        }
-        open := util.CheckPortOpen(config.General.Port)
-        if !open {
-            fmt.Printf("lieu: port %d is not open; try another one\n", config.General.Port)
-            util.Exit()
-        }
+		exists := util.CheckFileExists(config.Data.Database)
+		if !exists {
+			util.DatabaseDoesNotExist(config.Data.Database)
+		}
+		open := util.CheckPortOpen(config.General.Port)
+		if !open {
+			fmt.Printf("lieu: port %d is not open; try another one\n", config.General.Port)
+			util.Exit()
+		}
 		server.Serve(config)
 	default:
-        fmt.Println("Lieu: no such command, currently. Try `lieu help`")
+		fmt.Println("Lieu: no such command, currently. Try `lieu help`")
 	}
 }
 
