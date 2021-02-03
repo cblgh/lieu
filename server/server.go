@@ -36,7 +36,7 @@ func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config
 	if req.Method == http.MethodGet {
 		params := req.URL.Query()
 		words, exists := params["q"]
-		if !exists {
+		if !exists || words[0] == "" {
 			view := template.Must(template.ParseFiles("html/index-template.html"))
 			var empty interface{}
 			view.Execute(res, empty)
