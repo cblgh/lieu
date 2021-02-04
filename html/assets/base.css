@@ -110,13 +110,18 @@ p {
 }
 
 .search-button {
+    background-image: url("logo.svg");
 	font-size: 2rem;
 	color: var(--primary);
-	background: var(--secondary);
 	border: 0;
 	cursor: pointer;
 	border-radius: 2px;
     transition: opacity 150ms;
+
+    height: 2rem;
+    width: auto;
+    background-size: cover;
+    background-position: center;
 }
 
 .search-button:hover {

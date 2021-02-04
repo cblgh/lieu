@@ -2,6 +2,8 @@
     <head>
         <link href="/links/startpage.css" rel="stylesheet">
         <title>Lieu—webring search engine</title>
+        <link rel="shortcut icon" href="/links/logo.svg"> 
+        <link rel="apple touch icon" href="/links/logo.svg"> 
     </head>
     <body>
         <a class="about-link" href="/about">About</a>
@@ -10,8 +12,8 @@
                 <h1><a href="/">Lieu</a></h1>
                 <h2>the search for the new—endless</h2>
                 <form class="search-container">
-                    <input name="q" placeholder="tracking" value="{{ .Query }}" class="search-box">
-                    <button type="submit" class="search-button">👁</button>
+                    <input type="text" required minlength="1" name="q" placeholder="tracking" value="{{ .Query }}" class="search-box">
+                    <button type="submit" class="search-button"></button>
                 </form>
             </div>
         </main>
