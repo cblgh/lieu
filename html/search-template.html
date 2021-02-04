@@ -9,7 +9,7 @@
         <a class="about-link" href="/about">About</a>
         <h1><a href="/">Lieu</a></h1>
         <form method="GET" class="search-container">
-            <input name="q" value="{{ .Query }}" class="search-box">
+            <input type="search" minlength="1" required name="q" value="{{ .Query }}" class="search-box">
             <button type="submit" class="search-button"></button>
         </form>
         <main>
