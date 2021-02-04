@@ -111,13 +111,9 @@ p {
 
 .search-button {
     background-image: url("logo.svg");
-	font-size: 2rem;
-	color: var(--primary);
-	border: 0;
 	cursor: pointer;
-	border-radius: 2px;
+    border: 0;
     transition: opacity 150ms;
-
     height: 2rem;
     width: auto;
     background-size: cover;
