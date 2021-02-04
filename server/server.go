@@ -1,18 +1,17 @@
 package server
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
-    "database/sql"
 
+	"html/template"
 	"lieu/database"
 	"lieu/types"
 	"lieu/util"
-	"html/template"
-
-    // "github.com/shurcooL/vfsgen"
+	// "github.com/shurcooL/vfsgen"
 )
 
 type SearchData struct {
@@ -40,8 +39,8 @@ func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config
 		if !exists || words[0] == "" {
 			view := template.Must(template.ParseFiles("html/index-template.html"))
 			var empty interface{}
-            err := view.Execute(res, empty)
-            util.Check(err)
+			err := view.Execute(res, empty)
+			util.Check(err)
 			return
 		}
 		query = words[0]
@@ -49,7 +48,7 @@ func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config
 		view := template.Must(template.ParseFiles("html/index-template.html"))
 		var empty interface{}
 		err := view.Execute(res, empty)
-        util.Check(err)
+		util.Check(err)
 		return
 	}
 
@@ -70,7 +69,7 @@ func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config
 		Pages: pages,
 	}
 	err := view.Execute(res, data)
-    util.Check(err)
+	util.Check(err)
 }
 
 func aboutRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
@@ -88,7 +87,7 @@ func aboutRoute(res http.ResponseWriter, req *http.Request, config types.Config,
 		RingLink:     config.General.URL,
 	}
 	err := view.Execute(res, data)
-    util.Check(err)
+	util.Check(err)
 }
 
 type ListData struct {
@@ -113,12 +112,12 @@ func filteredRoute(res http.ResponseWriter, req *http.Request, config types.Conf
 		URLs:  URLs,
 	}
 	err := view.Execute(res, data)
-    util.Check(err)
+	util.Check(err)
 }
 
 func randomRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
-    link := database.GetRandomPage(db)
-    http.Redirect(res, req, link, http.StatusSeeOther)
+	link := database.GetRandomPage(db)
+	http.Redirect(res, req, link, http.StatusSeeOther)
 }
 
 func Serve(config types.Config) {
@@ -131,9 +130,9 @@ func Serve(config types.Config) {
 		searchRoute(res, req, config, db)
 	})
 
-    http.HandleFunc("/random", func(res http.ResponseWriter, req *http.Request) {
-        randomRoute(res, req, config, db)
-    })
+	http.HandleFunc("/random", func(res http.ResponseWriter, req *http.Request) {
+		randomRoute(res, req, config, db)
+	})
 
 	http.HandleFunc("/filtered", func(res http.ResponseWriter, req *http.Request) {
 		filteredRoute(res, req, config, db)
