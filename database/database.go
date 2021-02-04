@@ -113,6 +113,7 @@ func GetWordCount(db *sql.DB) int {
 func GetRandomPage(db *sql.DB) string {
     rows, err := db.Query("SELECT url FROM pages ORDER BY RANDOM() LIMIT 1;")
     util.Check(err)
+    defer rows.Close()
 
     var link string
     for rows.Next() {
@@ -125,6 +126,8 @@ func GetRandomPage(db *sql.DB) string {
 func countQuery(db *sql.DB, table string) int {
 	rows, err := db.Query(fmt.Sprintf("SELECT COUNT(*) FROM %s;", table))
 	util.Check(err)
+    defer rows.Close()
+
 	var count int
 	for rows.Next() {
 		err = rows.Scan(&count)
@@ -162,6 +165,8 @@ func searchWords(db *sql.DB, words []string, searchByScore bool) []types.PageDat
 
 	rows, err := stmt.Query(args...)
 	util.Check(err)
+    defer rows.Close()
+
 	var pageData types.PageData
 	var pages []types.PageData
 	for rows.Next() {

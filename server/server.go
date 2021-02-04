@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+    "database/sql"
 
 	"lieu/database"
 	"lieu/types"
@@ -30,7 +31,7 @@ type AboutData struct {
 
 const useURLTitles = true
 
-func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config) {
+func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
 	var query string
 
 	if req.Method == http.MethodGet {
@@ -39,18 +40,19 @@ func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config
 		if !exists || words[0] == "" {
 			view := template.Must(template.ParseFiles("html/index-template.html"))
 			var empty interface{}
-			view.Execute(res, empty)
+            err := view.Execute(res, empty)
+            util.Check(err)
 			return
 		}
 		query = words[0]
 	} else {
 		view := template.Must(template.ParseFiles("html/index-template.html"))
 		var empty interface{}
-		view.Execute(res, empty)
+		err := view.Execute(res, empty)
+        util.Check(err)
 		return
 	}
 
-	db := database.InitDB(config.Data.Database)
 	pages := database.SearchWordsByScore(db, util.Inflect(strings.Fields(query)))
 
 	if useURLTitles {
@@ -67,11 +69,11 @@ func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config
 		Query: query,
 		Pages: pages,
 	}
-	view.Execute(res, data)
+	err := view.Execute(res, data)
+    util.Check(err)
 }
 
-func aboutRoute(res http.ResponseWriter, req *http.Request, config types.Config) {
-	db := database.InitDB(config.Data.Database)
+func aboutRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
 	pageCount := util.Humanize(database.GetPageCount(db))
 	wordCount := util.Humanize(database.GetWordCount(db))
 	domainCount := database.GetDomainCount(db)
@@ -85,7 +87,8 @@ func aboutRoute(res http.ResponseWriter, req *http.Request, config types.Config)
 		FilteredLink: "/filtered",
 		RingLink:     config.General.URL,
 	}
-	view.Execute(res, data)
+	err := view.Execute(res, data)
+    util.Check(err)
 }
 
 type ListData struct {
@@ -93,7 +96,7 @@ type ListData struct {
 	URLs  []types.PageData
 }
 
-func filteredRoute(res http.ResponseWriter, req *http.Request, config types.Config) {
+func filteredRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
 	view := template.Must(template.ParseFiles("html/list-template.html"))
 	var URLs []types.PageData
 	for _, domain := range util.ReadList(config.Crawler.BannedDomains, "\n") {
@@ -109,30 +112,33 @@ func filteredRoute(res http.ResponseWriter, req *http.Request, config types.Conf
 		Title: "Filtered Domains",
 		URLs:  URLs,
 	}
-	view.Execute(res, data)
+	err := view.Execute(res, data)
+    util.Check(err)
 }
 
-func randomRoute(res http.ResponseWriter, req *http.Request, config types.Config) {
-	db := database.InitDB(config.Data.Database)
+func randomRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
     link := database.GetRandomPage(db)
     http.Redirect(res, req, link, http.StatusSeeOther)
 }
 
 func Serve(config types.Config) {
+	db := database.InitDB(config.Data.Database)
+
 	http.HandleFunc("/about", func(res http.ResponseWriter, req *http.Request) {
-		aboutRoute(res, req, config)
+		aboutRoute(res, req, config, db)
 	})
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
-		searchRoute(res, req, config)
-	})
-
-	http.HandleFunc("/filtered", func(res http.ResponseWriter, req *http.Request) {
-		filteredRoute(res, req, config)
+		searchRoute(res, req, config, db)
 	})
 
     http.HandleFunc("/random", func(res http.ResponseWriter, req *http.Request) {
-        randomRoute(res, req, config)
+        randomRoute(res, req, config, db)
     })
+
+	http.HandleFunc("/filtered", func(res http.ResponseWriter, req *http.Request) {
+		filteredRoute(res, req, config, db)
+	})
+
 	fileserver := http.FileServer(http.Dir("html/assets/"))
 	http.Handle("/links/", http.StripPrefix("/links/", fileserver))
 
