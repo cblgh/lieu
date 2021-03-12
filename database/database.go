@@ -110,9 +110,26 @@ func GetWordCount(db *sql.DB) int {
 	return countQuery(db, "inv_index")
 }
 
-func GetRandomPage(db *sql.DB) string {
-	rows, err := db.Query("SELECT url FROM pages ORDER BY RANDOM() LIMIT 1;")
+func GetRandomDomain(db *sql.DB) string {
+	rows, err := db.Query("SELECT domain FROM domains ORDER BY RANDOM() LIMIT 1;")
 	util.Check(err)
+	defer rows.Close()
+
+	var domain string
+	for rows.Next() {
+		err = rows.Scan(&domain)
+		util.Check(err)
+	}
+	return domain
+}
+
+func GetRandomPage(db *sql.DB) string {
+	domain := GetRandomDomain(db)
+	stmt, err := db.Prepare("SELECT url FROM pages WHERE domain = ? ORDER BY RANDOM() LIMIT 1;")
+	defer stmt.Close()
+	util.Check(err)
+
+	rows, err := stmt.Query(domain)
 	defer rows.Close()
 
 	var link string
