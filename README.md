@@ -6,6 +6,8 @@ search and discovery. In Lieu, the internet is not what is made searchable, but
 instead one's own neighbourhood. Put differently, Lieu is a neighbourhood search
 engine, a way for personal webrings to increase serendipitous connexions.
 
+![lieu screenshot](https://user-images.githubusercontent.com/3862362/107115659-75624d80-686e-11eb-81c8-0c6bdec07082.png)
+
 
 ## Goals
 * Enable serendipitous discovery
