@@ -90,6 +90,13 @@ func main() {
 			util.DatabaseDoesNotExist(config.Data.Database)
 		}
 		interactiveMode(config.Data.Database)
+	case "random":
+		exists := util.CheckFileExists(config.Data.Database)
+		if !exists {
+			util.DatabaseDoesNotExist(config.Data.Database)
+		}
+		db := database.InitDB(config.Data.Database)
+		fmt.Println(database.GetRandomPage(db))
 	case "host":
 		exists := util.CheckFileExists(config.Data.Database)
 		if !exists {
