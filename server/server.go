@@ -3,6 +3,8 @@ package server
 import (
 	"database/sql"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -11,12 +13,23 @@ import (
 	"lieu/database"
 	"lieu/types"
 	"lieu/util"
-	// "github.com/shurcooL/vfsgen"
 )
+
+type Page struct {
+	SiteName string
+	Title    string
+	Body     []byte
+	Data     interface{}
+}
 
 type SearchData struct {
 	Query string
 	Pages []types.PageData
+}
+
+type ListData struct {
+	Title string
+	URLs  []types.PageData
 }
 
 type AboutData struct {
@@ -30,25 +43,26 @@ type AboutData struct {
 
 const useURLTitles = true
 
+var templates = template.Must(template.ParseFiles(
+	"html/head.html", "html/nav.html", "html/footer.html",
+	"html/about.html", "html/index.html", "html/list.html", "html/search.html", "html/webring.html"))
+
 func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
 	var query string
+	p := &Page{}
 
 	if req.Method == http.MethodGet {
 		params := req.URL.Query()
 		words, exists := params["q"]
 		if !exists || words[0] == "" {
-			view := template.Must(template.ParseFiles("html/index-template.html"))
-			var empty interface{}
-			err := view.Execute(res, empty)
-			util.Check(err)
+			p.Data = SearchData{}
+			renderTemplate(res, config, "index", p)
 			return
 		}
 		query = words[0]
 	} else {
-		view := template.Must(template.ParseFiles("html/index-template.html"))
-		var empty interface{}
-		err := view.Execute(res, empty)
-		util.Check(err)
+		p.Data = SearchData{}
+		renderTemplate(res, config, "index", p)
 		return
 	}
 
@@ -63,22 +77,21 @@ func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config
 		}
 	}
 
-	view := template.Must(template.ParseFiles("html/search-template.html"))
-	data := SearchData{
+	p.Data = SearchData{
 		Query: query,
 		Pages: pages,
 	}
-	err := view.Execute(res, data)
-	util.Check(err)
+	renderTemplate(res, config, "search", p)
 }
 
 func aboutRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
+	p := &Page{}
+
 	pageCount := util.Humanize(database.GetPageCount(db))
 	wordCount := util.Humanize(database.GetWordCount(db))
 	domainCount := database.GetDomainCount(db)
 
-	view := template.Must(template.ParseFiles("html/about-template.html"))
-	data := AboutData{
+	p.Data = AboutData{
 		InstanceName: config.General.Name,
 		DomainCount:  domainCount,
 		PageCount:    pageCount,
@@ -86,17 +99,12 @@ func aboutRoute(res http.ResponseWriter, req *http.Request, config types.Config,
 		FilteredLink: "/filtered",
 		RingLink:     config.General.URL,
 	}
-	err := view.Execute(res, data)
-	util.Check(err)
-}
 
-type ListData struct {
-	Title string
-	URLs  []types.PageData
+	renderTemplate(res, config, "about", p)
 }
 
 func filteredRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
-	view := template.Must(template.ParseFiles("html/list-template.html"))
+	p := &Page{}
 	var URLs []types.PageData
 	for _, domain := range util.ReadList(config.Crawler.BannedDomains, "\n") {
 		u, err := url.Parse(domain)
@@ -107,12 +115,11 @@ func filteredRoute(res http.ResponseWriter, req *http.Request, config types.Conf
 		p := types.PageData{Title: domain, URL: u.String()}
 		URLs = append(URLs, p)
 	}
-	data := ListData{
+	p.Data = ListData{
 		Title: "Filtered Domains",
 		URLs:  URLs,
 	}
-	err := view.Execute(res, data)
-	util.Check(err)
+	renderTemplate(res, config, "list", p)
 }
 
 func randomRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
@@ -120,14 +127,31 @@ func randomRoute(res http.ResponseWriter, req *http.Request, config types.Config
 	http.Redirect(res, req, link, http.StatusSeeOther)
 }
 
+func renderTemplate(res http.ResponseWriter, config types.Config, tmpl string, p *Page) {
+	filename := "html/" + tmpl + ".html"
+	body, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println("Error loading template: " + filename)
+		log.Fatalln(err)
+	}
+
+	p.Title = tmpl
+	p.Body = body
+	p.SiteName = config.General.Name
+
+	errTemp := templates.ExecuteTemplate(res, tmpl+".html", p)
+	util.Check(errTemp)
+}
+
 func Serve(config types.Config) {
 	db := database.InitDB(config.Data.Database)
 
-	http.HandleFunc("/about", func(res http.ResponseWriter, req *http.Request) {
-		aboutRoute(res, req, config, db)
-	})
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
 		searchRoute(res, req, config, db)
+	})
+
+	http.HandleFunc("/about", func(res http.ResponseWriter, req *http.Request) {
+		aboutRoute(res, req, config, db)
 	})
 
 	http.HandleFunc("/random", func(res http.ResponseWriter, req *http.Request) {
@@ -139,10 +163,10 @@ func Serve(config types.Config) {
 	})
 
 	fileserver := http.FileServer(http.Dir("html/assets/"))
-	http.Handle("/links/", http.StripPrefix("/links/", fileserver))
+	http.Handle("/assets/", http.StripPrefix("/assets/", fileserver))
 
 	portstr := fmt.Sprintf(":%d", config.General.Port)
-	fmt.Println("listening on", portstr)
+	fmt.Println("Listening on port: ", portstr)
 
 	http.ListenAndServe(portstr, nil)
 }

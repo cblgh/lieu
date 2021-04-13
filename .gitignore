@@ -1,3 +1,6 @@
+# Lieu
+searchengine.db
+
 #~top ignores~
 node_modules/
 *.vim
