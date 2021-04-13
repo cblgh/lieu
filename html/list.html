@@ -1,0 +1,12 @@
+{{ template "head" . }}
+{{ template "nav" . }}
+<main>
+    <ul>
+        {{ range .Data.URLs }}
+        <li>
+                <a class="link" href="{{ .URL }}">{{ .Title }}</a>
+        </li>
+        {{ end }}
+    </ul>
+</main>
+{{ template "footer" . }}
