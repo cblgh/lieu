@@ -1,0 +1,91 @@
+@import url("base.css");
+
+html {
+    max-width: 31rem;
+    max-width: 100%;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    font-family: "Noto Serif";
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 2rem;
+}
+
+header {
+    clear: both;
+    display: block;
+}
+
+header h1 {
+    float: left;
+}
+
+header ul {
+    float: right;
+    display: block;
+    margin-top: 2rem;
+    margin-right: 2rem;
+}
+
+header ul li {
+    margin-right: 1.5rem;
+    display: inline-block;
+}
+
+main {
+    display: grid;
+    justify-items: left;
+    align-items: left;
+    margin-top: 1rem;
+}
+
+.clear {
+    clear: both;
+}
+
+.lieu {
+    font-family: "Noto Serif";
+    font-weight: 400;
+}
+
+.search-container {
+    grid-template-columns: 19rem 3rem;
+}
+
+.lieu-container {
+    justify-items: start;
+}
+
+
+.entry {
+    -webkit-column-break-inside: avoid;
+    -moz-column-break-inside:avoid;
+    -moz-page-break-inside:avoid;
+    page-break-inside: avoid;
+    break-inside: avoid-column;
+    margin-bottom: 1rem;
+}
+
+.entry p {
+    color: #777777;
+}
+
+.link {
+    font-style: italic;
+}
+
+@media only screen and (min-device-width : 320px) and (max-device-width : 720px) {
+
+    main {
+        columns: 1 !important;
+    }
+}
+
