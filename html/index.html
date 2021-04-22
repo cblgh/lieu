@@ -1,12 +1,14 @@
 {{ template "head" . }}
 {{ template "nav" . }}
-<div class="lieu-container">
-    <h2>
-        <strong>Lieu</strong> the search for the new—endless
-    </h2>
-    <form class="search-container">
-        <input type="search" required minlength="1" name="q" placeholder="tracking" value="{{ .Data.Query }}" class="search-box">
-        <button type="submit" class="search-button"></button>
-    </form>
-</div>
+<main>
+    <div class="lieu-container">
+        <h2>
+            <strong>Lieu</strong> the search for the new—endless
+        </h2>
+        <form class="search-container">
+            <input type="search" required minlength="1" name="q" placeholder="tracking" value="{{ .Data.Query }}" class="search-box">
+            <button type="submit" class="search-button"></button>
+        </form>
+    </div>
+</main>
 {{ template "footer" . }}
