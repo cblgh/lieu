@@ -11,7 +11,6 @@ import (
 	"lieu/database"
 	"lieu/types"
 	"lieu/util"
-	// "github.com/shurcooL/vfsgen"
 )
 
 type SearchData struct {
@@ -28,7 +27,17 @@ type AboutData struct {
 	RingLink     string
 }
 
+type ListData struct {
+	Title string
+	URLs  []types.PageData
+}
+
 const useURLTitles = true
+
+var indexView = template.Must(template.ParseFiles("html/index-template.html"))
+var aboutView = template.Must(template.ParseFiles("html/about-template.html"))
+var listView = template.Must(template.ParseFiles("html/list-template.html"))
+var searchResultsView = template.Must(template.ParseFiles("html/search-template.html"))
 
 func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
 	var query string
@@ -37,17 +46,15 @@ func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config
 		params := req.URL.Query()
 		words, exists := params["q"]
 		if !exists || words[0] == "" {
-			view := template.Must(template.ParseFiles("html/index-template.html"))
 			var empty interface{}
-			err := view.Execute(res, empty)
+			err := indexView.Execute(res, empty)
 			util.Check(err)
 			return
 		}
 		query = words[0]
 	} else {
-		view := template.Must(template.ParseFiles("html/index-template.html"))
 		var empty interface{}
-		err := view.Execute(res, empty)
+		err := indexView.Execute(res, empty)
 		util.Check(err)
 		return
 	}
@@ -63,12 +70,11 @@ func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config
 		}
 	}
 
-	view := template.Must(template.ParseFiles("html/search-template.html"))
 	data := SearchData{
 		Query: query,
 		Pages: pages,
 	}
-	err := view.Execute(res, data)
+	err := searchResultsView.Execute(res, data)
 	util.Check(err)
 }
 
@@ -77,7 +83,6 @@ func aboutRoute(res http.ResponseWriter, req *http.Request, config types.Config,
 	wordCount := util.Humanize(database.GetWordCount(db))
 	domainCount := database.GetDomainCount(db)
 
-	view := template.Must(template.ParseFiles("html/about-template.html"))
 	data := AboutData{
 		InstanceName: config.General.Name,
 		DomainCount:  domainCount,
@@ -86,17 +91,11 @@ func aboutRoute(res http.ResponseWriter, req *http.Request, config types.Config,
 		FilteredLink: "/filtered",
 		RingLink:     config.General.URL,
 	}
-	err := view.Execute(res, data)
+	err := aboutView.Execute(res, data)
 	util.Check(err)
 }
 
-type ListData struct {
-	Title string
-	URLs  []types.PageData
-}
-
 func filteredRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
-	view := template.Must(template.ParseFiles("html/list-template.html"))
 	var URLs []types.PageData
 	for _, domain := range util.ReadList(config.Crawler.BannedDomains, "\n") {
 		u, err := url.Parse(domain)
@@ -111,7 +110,7 @@ func filteredRoute(res http.ResponseWriter, req *http.Request, config types.Conf
 		Title: "Filtered Domains",
 		URLs:  URLs,
 	}
-	err := view.Execute(res, data)
+	err := listView.Execute(res, data)
 	util.Check(err)
 }
 
