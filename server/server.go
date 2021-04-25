@@ -49,15 +49,12 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 
 	if req.Method == http.MethodGet {
 		params := req.URL.Query()
-		words, exists := params["q"]
-		if !exists || words[0] == "" {
-			var empty interface{}
-			err := indexView.Execute(res, empty)
-			util.Check(err)
-			return
-		}
-		query = words[0]
-	} else {
+		if words, exists := params["q"]; exists && words[0] != "" {
+            query = words[0]
+        }
+	}
+
+    if len(query) == 0 {
 		var empty interface{}
 		err := indexView.Execute(res, empty)
 		util.Check(err)
