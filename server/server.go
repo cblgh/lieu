@@ -14,8 +14,8 @@ import (
 )
 
 type RequestHandler struct {
-    config types.Config
-    db *sql.DB
+	config types.Config
+	db     *sql.DB
 }
 
 type SearchData struct {
@@ -126,7 +126,7 @@ func (h RequestHandler) randomRoute(res http.ResponseWriter, req *http.Request) 
 
 func Serve(config types.Config) {
 	db := database.InitDB(config.Data.Database)
-    handler := RequestHandler{config: config, db: db}
+	handler := RequestHandler{config: config, db: db}
 
 	http.HandleFunc("/about", handler.aboutRoute)
 	http.HandleFunc("/", handler.searchRoute)
