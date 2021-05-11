@@ -14,10 +14,10 @@
                 {{ .SiteName }}
             </h1>
             <h2>
-                the search for the new—endless
+                {{ .Data.Tagline }}
             </h2>
             <form class="search-container">
-                <input type="search" required minlength="1" name="q" placeholder="tracking" value="{{ .Data.Query }}" class="search-box">
+                <input type="search" required minlength="1" name="q" placeholder="{{ .Data.Placeholder }}" class="search-box">
                 <button type="submit" class="search-button"></button>
             </form>
         </div>

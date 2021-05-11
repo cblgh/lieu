@@ -15,9 +15,11 @@ type PageData struct {
 
 type Config struct {
 	General struct {
-		Name string `json:name`
-		URL  string `json:url`
-		Port int    `json:port`
+		Name        string `json:name`
+		Tagline     string `json:tagline`
+		Placeholder string `json:placeholder`
+		URL         string `json:url`
+		Port        int    `json:port`
 	} `json:general`
 	Data struct {
 		Source     string `json:source`

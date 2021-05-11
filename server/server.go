@@ -28,6 +28,11 @@ type SearchData struct {
 	Pages []types.PageData
 }
 
+type IndexData struct {
+	Tagline     string
+	Placeholder string
+}
+
 type ListData struct {
 	Title string
 	URLs  []types.PageData
@@ -60,7 +65,7 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 	}
 
 	if len(query) == 0 {
-		view.Data = SearchData{}
+		view.Data = IndexData{Tagline: h.config.General.Tagline, Placeholder: h.config.General.Placeholder}
 		h.renderView(res, "index", view)
 		return
 	}
