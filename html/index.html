@@ -9,16 +9,18 @@
 <div class="clear"></div>
 <main>
     <div class="lieu-container">
-        <h1>
-            {{ .SiteName }}
-        </h1>
-        <h2>
-            the search for the new—endless
-        </h2>
-        <form class="search-container">
-            <input type="search" required minlength="1" name="q" placeholder="tracking" value="{{ .Data.Query }}" class="search-box">
-            <button type="submit" class="search-button"></button>
-        </form>
+        <div>
+            <h1>
+                {{ .SiteName }}
+            </h1>
+            <h2>
+                the search for the new—endless
+            </h2>
+            <form class="search-container">
+                <input type="search" required minlength="1" name="q" placeholder="tracking" value="{{ .Data.Query }}" class="search-box">
+                <button type="submit" class="search-button"></button>
+            </form>
+        </div>
     </div>
 </main>
 {{ template "footer" . }}

@@ -127,6 +127,10 @@ func (h RequestHandler) randomRoute(res http.ResponseWriter, req *http.Request) 
 	http.Redirect(res, req, link, http.StatusSeeOther)
 }
 
+func (h RequestHandler) webringRoute(res http.ResponseWriter, req *http.Request) {
+	http.Redirect(res, req, h.config.General.URL, http.StatusSeeOther)
+}
+
 func (h RequestHandler) renderView(res http.ResponseWriter, tmpl string, view *TemplateView) {
 	view.SiteName = h.config.General.Name
 	errTemp := templates.ExecuteTemplate(res, tmpl+".html", view)
@@ -140,6 +144,7 @@ func Serve(config types.Config) {
 	http.HandleFunc("/about", handler.aboutRoute)
 	http.HandleFunc("/", handler.searchRoute)
 	http.HandleFunc("/random", handler.randomRoute)
+	http.HandleFunc("/webring", handler.webringRoute)
 	http.HandleFunc("/filtered", handler.filteredRoute)
 
 	fileserver := http.FileServer(http.Dir("html/assets/"))
