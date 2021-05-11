@@ -1,5 +1,7 @@
 [general]
 name = "Sweet Webring"
+tagline = "the search for the new—endless"
+placeholder = "Search"
 # used by the precrawl command and linked to in /about route
 url = "https://example.com/"
 port = 10001
