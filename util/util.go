@@ -1,18 +1,18 @@
 package util
 
 import (
-    "os"
 	"bytes"
 	"encoding/json"
 	"fmt"
-    "net"
 	"io/ioutil"
 	"log"
+	"net"
+	"os"
 	"strings"
 
-	"lieu/types"
 	"github.com/jinzhu/inflection"
 	"github.com/komkom/toml"
+	"lieu/types"
 )
 
 func Inflect(words []string) []string {
@@ -30,17 +30,17 @@ func Check(err error) {
 }
 
 func DatabaseDoesNotExist(filepath string) {
-    fmt.Printf("lieu: database %s does not exist\n", filepath)
-    fmt.Println("lieu: try running `lieu ingest` if you have already crawled source data")
-    Exit()
+	fmt.Printf("lieu: database %s does not exist\n", filepath)
+	fmt.Println("lieu: try running `lieu ingest` if you have already crawled source data")
+	Exit()
 }
 
-func CheckFileExists (path string) bool {
-    _, err := os.Stat(path)
-    if err == nil {
-        return true
-    }
-    return os.IsExist(err)
+func CheckFileExists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+	return os.IsExist(err)
 }
 
 func Humanize(n int) string {
@@ -64,30 +64,30 @@ func Contains(arr []string, query string) bool {
 
 func ReadList(filepath, sep string) []string {
 	data, err := ioutil.ReadFile(filepath)
-	if err != nil || len(data) == 0{
+	if err != nil || len(data) == 0 {
 		return []string{}
 	}
 	return strings.Split(strings.TrimSuffix(string(data), sep), sep)
 }
 
 func CheckPortOpen(port int) bool {
-    tcpaddr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("localhost:%d", port))
-    if err != nil {
-        return false
-    }
+	tcpaddr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("localhost:%d", port))
+	if err != nil {
+		return false
+	}
 
-    l, err := net.ListenTCP("tcp", tcpaddr)
-    defer l.Close()
+	l, err := net.ListenTCP("tcp", tcpaddr)
+	defer l.Close()
 
-    if err != nil {
-        return false
-    }
-    return true
+	if err != nil {
+		return false
+	}
+	return true
 }
 
 func ReadConfig() types.Config {
 	data, err := ioutil.ReadFile("lieu.toml")
-    Check(err)
+	Check(err)
 
 	var conf types.Config
 	decoder := json.NewDecoder(toml.New(bytes.NewBuffer(data)))
@@ -98,8 +98,8 @@ func ReadConfig() types.Config {
 	return conf
 }
 
-func WriteMockConfig () {
-    conf := []byte(`[general]
+func WriteMockConfig() {
+	conf := []byte(`[general]
 name = "Sweet Webring"
 # used by the precrawl command and linked to in /about route
 url = "https://example.com/"
@@ -127,10 +127,10 @@ boringWords = "data/boring-words.txt"
 # domains that won't be output as outgoing links
 boringDomains = "data/boring-domains.txt"
 `)
-    err := ioutil.WriteFile("lieu.toml", conf, 0644)
+	err := ioutil.WriteFile("lieu.toml", conf, 0644)
 	Check(err)
 }
 
-func Exit () {
-    os.Exit(0)
+func Exit() {
+	os.Exit(0)
 }

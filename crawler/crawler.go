@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
-    "time"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
@@ -84,7 +84,6 @@ func getDomains(links []string) []string {
 	}
 	return domains
 }
-
 
 func findSuffix(suffixes []string, query string) bool {
 	for _, suffix := range suffixes {
@@ -208,8 +207,8 @@ func Crawl(config types.Config) {
 	c.AllowURLRevisit = false
 	c.DisallowedDomains = getBannedDomains(config.Crawler.BannedDomains)
 
-    delay, _ := time.ParseDuration("200ms")
-    c.Limit(&colly.LimitRule{DomainGlob: "*", Delay: delay, Parallelism: 3})
+	delay, _ := time.ParseDuration("200ms")
+	c.Limit(&colly.LimitRule{DomainGlob: "*", Delay: delay, Parallelism: 3})
 
 	boringDomains := getBoringDomains(config.Crawler.BoringDomains)
 	boringWords := getBoringWords(config.Crawler.BoringWords)

@@ -1,4 +1,5 @@
 # Lieu
+
 _an alternative search engine_
 
 Created in response to the environs of apathy concerning the use of hypertext
@@ -10,11 +11,13 @@ engine, a way for personal webrings to increase serendipitous connexions.
 
 
 ## Goals
+
 * Enable serendipitous discovery
 * Support personal communities
 * Be reusable, easily
 
 ## Usage
+
 ```
 $ lieu help
 Lieu: neighbourhood search engine
@@ -28,6 +31,7 @@ Commands
 
 Example:
     lieu precrawl > data/webring.txt
+    lieu crawl > data/crawled.txt
     lieu ingest
     lieu host
 ```
@@ -39,12 +43,13 @@ the files Lieu reads from, as defined in the config file. See below for a
 typical workflow.
 
 ### Workflow
+
 * Edit the config
 * Add domains to crawl in `config.crawler.webring`
 	* **If you have a webpage with links you want to crawl:**
 	* Set the config's `url` field to that page
 	* Populate the list of domains to crawl with `precrawl`: `lieu precrawl > data/webring.txt`
-* Crawl: `lieu crawl > data/source.txt`
+* Crawl: `lieu crawl > data/crawled.txt`
 * Create database: `lieu ingest`
 * Host engine: `lieu host`
 
@@ -52,6 +57,7 @@ After ingesting the data with `lieu ingest`, you can also use lieu to search the
 corpus in the terminal with `lieu search`.
 
 ## Config
+
 The config file is written in [TOML](https://toml.io/en/).
 
 ```toml
@@ -85,6 +91,7 @@ boringDomains = "data/boring-domains.txt"
 ```
 
 For your own use, the following config fields should be customized:
+
 * `name`
 * `url `
 * `port`
@@ -93,6 +100,7 @@ For your own use, the following config fields should be customized:
 * `bannedDomains`
 
 The following config-defined files can stay as-is unless you have specific requirements:
+
 * `database`
 * `heuristics`
 * `wordlist`
@@ -102,5 +110,6 @@ For a full rundown of the files and their various jobs, see the [files
 description](docs/files.md).
 
 ### License
+
 Source code `AGPL-3.0-or-later`, Inter is available under `SIL OPEN FONT
 LICENSE Version 1.1`, Noto Serif is licensed as `Apache License, Version 2.0`.

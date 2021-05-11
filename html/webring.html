@@ -1,0 +1,9 @@
+{{ template "head" . }}
+{{ template "nav" . }}
+    {{ range .Data.Domains }}
+        <div class="entry">
+            <a class="link" href="{{ .URL }}">{{ .Title }}</a>
+            <p>{{ .About }}</p>
+        </div>
+    {{ end }}
+{{ template "footer" . }}

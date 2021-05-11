@@ -18,18 +18,14 @@ type RequestHandler struct {
 	db     *sql.DB
 }
 
+type TemplateView struct {
+	SiteName string
+	Data     interface{}
+}
+
 type SearchData struct {
 	Query string
 	Pages []types.PageData
-}
-
-type AboutData struct {
-	DomainCount  int
-	InstanceName string
-	PageCount    string
-	TermCount    string
-	FilteredLink string
-	RingLink     string
 }
 
 type ListData struct {
@@ -37,27 +33,35 @@ type ListData struct {
 	URLs  []types.PageData
 }
 
+type AboutData struct {
+	DomainCount  int
+	WebringName  string
+	PageCount    string
+	TermCount    string
+	FilteredLink string
+	RingLink     string
+}
+
 const useURLTitles = true
 
-var indexView = template.Must(template.ParseFiles("html/index-template.html"))
-var aboutView = template.Must(template.ParseFiles("html/about-template.html"))
-var listView = template.Must(template.ParseFiles("html/list-template.html"))
-var searchResultsView = template.Must(template.ParseFiles("html/search-template.html"))
+var templates = template.Must(template.ParseFiles(
+	"html/head.html", "html/nav.html", "html/footer.html",
+	"html/about.html", "html/index.html", "html/list.html", "html/search.html", "html/webring.html"))
 
 func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) {
 	var query string
+	view := &TemplateView{}
 
 	if req.Method == http.MethodGet {
 		params := req.URL.Query()
 		if words, exists := params["q"]; exists && words[0] != "" {
-            query = words[0]
-        }
+			query = words[0]
+		}
 	}
 
-    if len(query) == 0 {
-		var empty interface{}
-		err := indexView.Execute(res, empty)
-		util.Check(err)
+	if len(query) == 0 {
+		view.Data = SearchData{}
+		h.renderView(res, "index", view)
 		return
 	}
 
@@ -72,32 +76,34 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 		}
 	}
 
-	data := SearchData{
+	view.Data = SearchData{
 		Query: query,
 		Pages: pages,
 	}
-	err := searchResultsView.Execute(res, data)
-	util.Check(err)
+	h.renderView(res, "search", view)
 }
 
 func (h RequestHandler) aboutRoute(res http.ResponseWriter, req *http.Request) {
+	view := &TemplateView{}
+
 	pageCount := util.Humanize(database.GetPageCount(h.db))
 	wordCount := util.Humanize(database.GetWordCount(h.db))
 	domainCount := database.GetDomainCount(h.db)
 
-	data := AboutData{
-		InstanceName: h.config.General.Name,
+	view.Data = AboutData{
+		WebringName:  h.config.General.Name,
 		DomainCount:  domainCount,
 		PageCount:    pageCount,
 		TermCount:    wordCount,
 		FilteredLink: "/filtered",
 		RingLink:     h.config.General.URL,
 	}
-	err := aboutView.Execute(res, data)
-	util.Check(err)
+	h.renderView(res, "about", view)
 }
 
 func (h RequestHandler) filteredRoute(res http.ResponseWriter, req *http.Request) {
+	view := &TemplateView{}
+
 	var URLs []types.PageData
 	for _, domain := range util.ReadList(h.config.Crawler.BannedDomains, "\n") {
 		u, err := url.Parse(domain)
@@ -108,17 +114,23 @@ func (h RequestHandler) filteredRoute(res http.ResponseWriter, req *http.Request
 		p := types.PageData{Title: domain, URL: u.String()}
 		URLs = append(URLs, p)
 	}
-	data := ListData{
+
+	view.Data = ListData{
 		Title: "Filtered Domains",
 		URLs:  URLs,
 	}
-	err := listView.Execute(res, data)
-	util.Check(err)
+	h.renderView(res, "list", view)
 }
 
 func (h RequestHandler) randomRoute(res http.ResponseWriter, req *http.Request) {
 	link := database.GetRandomPage(h.db)
 	http.Redirect(res, req, link, http.StatusSeeOther)
+}
+
+func (h RequestHandler) renderView(res http.ResponseWriter, tmpl string, view *TemplateView) {
+	view.SiteName = h.config.General.Name
+	errTemp := templates.ExecuteTemplate(res, tmpl+".html", view)
+	util.Check(errTemp)
 }
 
 func Serve(config types.Config) {
@@ -131,10 +143,10 @@ func Serve(config types.Config) {
 	http.HandleFunc("/filtered", handler.filteredRoute)
 
 	fileserver := http.FileServer(http.Dir("html/assets/"))
-	http.Handle("/links/", http.StripPrefix("/links/", fileserver))
+	http.Handle("/assets/", http.StripPrefix("/assets/", fileserver))
 
 	portstr := fmt.Sprintf(":%d", config.General.Port)
-	fmt.Println("listening on", portstr)
+	fmt.Println("Listening on port: ", portstr)
 
 	http.ListenAndServe(portstr, nil)
 }

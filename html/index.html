@@ -1,0 +1,24 @@
+{{ template "head" . }}
+<header>
+    <h2><a href="https://github.com/cblgh/lieu">Lieu</a></h2>
+    <ul>
+        <li><a href="/webring">Webring</a></li>
+        <li><a href="/about">About</a></li>
+    </ul>
+</header>
+<div class="clear"></div>
+<main>
+    <div class="lieu-container">
+        <h1>
+            {{ .SiteName }}
+        </h1>
+        <h2>
+            the search for the new—endless
+        </h2>
+        <form class="search-container">
+            <input type="search" required minlength="1" name="q" placeholder="tracking" value="{{ .Data.Query }}" class="search-box">
+            <button type="submit" class="search-button"></button>
+        </form>
+    </div>
+</main>
+{{ template "footer" . }}

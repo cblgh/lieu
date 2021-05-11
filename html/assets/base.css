@@ -42,9 +42,9 @@ html {
     font-family: "Inter UI", sans-serif;
     background: var(--secondary);
     color: var(--primary);
-    max-width: 650px;
     padding-bottom: 2rem;
     padding-left: 2rem;
+    padding-right: 2rem;
     margin-top: 2rem;
 }
 
@@ -141,7 +141,10 @@ and (max-device-width : 720px)
         padding-left: 0.75rem;
         padding-right: 0.75rem;
         font-size: 30pt;
-        max-width: 100vw;
+        max-width: 100vw !important;
+    }
+    #results {
+        display: grid;
     }
 }
 

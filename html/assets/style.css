@@ -1,0 +1,106 @@
+@import url("base.css");
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 0rem;
+}
+
+h2 {
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.lieu-container h2 {
+    font-style: italic;
+}
+
+header {
+    clear: both;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: max-content max-content 1fr;
+    grid-column-gap: 1rem;
+    align-items: start;
+}
+
+header h2 a, header h2 a:hover {
+    border-bottom: none;
+}
+
+header ul {
+    justify-self: end;
+    margin-top: 0.5rem;
+    grid-column-start: 3;
+}
+
+header ul li {
+    margin-left: 1.5rem;
+    display: inline-block;
+}
+
+header ul li:first-of-type {
+    margin-left: 0;
+}
+
+main {
+    display: grid;
+    justify-items: left;
+    align-items: left;
+    margin-top: 1rem;
+}
+
+main#results {
+    display: block;
+    margin-top: 4rem;
+    columns: 2;
+    max-width: 1200px;
+}
+
+main#about {
+    max-width: 600px;
+}
+
+.lieu {
+    font-family: "Noto Serif";
+    font-weight: 400;
+}
+
+.search-container {
+    grid-template-columns: 19rem 3rem;
+}
+
+.lieu-container {
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    margin-top: 5rem;
+    width: 100%;
+}
+
+.entry {
+    -webkit-column-break-inside: avoid;
+    -moz-column-break-inside:avoid;
+    -moz-page-break-inside:avoid;
+    page-break-inside: avoid;
+    break-inside: avoid-column;
+    margin-bottom: 1rem;
+}
+
+.entry p {
+    color: var(--primary);
+    opacity: 0.45;
+}
+
+.link {
+    font-style: italic;
+}
+
+@media only screen and (min-device-width : 320px) and (max-device-width : 720px) {
+    main {
+        columns: 1 !important;
+    }
+}
+
