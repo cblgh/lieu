@@ -3,8 +3,6 @@ package server
 import (
 	"database/sql"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -15,10 +13,8 @@ import (
 	"lieu/util"
 )
 
-type Page struct {
+type TemplateView struct {
 	SiteName string
-	Title    string
-	Body     []byte
 	Data     interface{}
 }
 
@@ -49,20 +45,20 @@ var templates = template.Must(template.ParseFiles(
 
 func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
 	var query string
-	p := &Page{}
+	view := &TemplateView{}
 
 	if req.Method == http.MethodGet {
 		params := req.URL.Query()
 		words, exists := params["q"]
 		if !exists || words[0] == "" {
-			p.Data = SearchData{}
-			renderTemplate(res, config, "index", p)
+			view.Data = SearchData{}
+			renderView(res, config, "index", view)
 			return
 		}
 		query = words[0]
 	} else {
-		p.Data = SearchData{}
-		renderTemplate(res, config, "index", p)
+		view.Data = SearchData{}
+		renderView(res, config, "index", view)
 		return
 	}
 
@@ -77,21 +73,21 @@ func searchRoute(res http.ResponseWriter, req *http.Request, config types.Config
 		}
 	}
 
-	p.Data = SearchData{
+	view.Data = SearchData{
 		Query: query,
 		Pages: pages,
 	}
-	renderTemplate(res, config, "search", p)
+	renderView(res, config, "search", view)
 }
 
 func aboutRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
-	p := &Page{}
+	view := &TemplateView{}
 
 	pageCount := util.Humanize(database.GetPageCount(db))
 	wordCount := util.Humanize(database.GetWordCount(db))
 	domainCount := database.GetDomainCount(db)
 
-	p.Data = AboutData{
+	view.Data = AboutData{
 		InstanceName: config.General.Name,
 		DomainCount:  domainCount,
 		PageCount:    pageCount,
@@ -100,11 +96,11 @@ func aboutRoute(res http.ResponseWriter, req *http.Request, config types.Config,
 		RingLink:     config.General.URL,
 	}
 
-	renderTemplate(res, config, "about", p)
+	renderView(res, config, "about", view)
 }
 
 func filteredRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
-	p := &Page{}
+	view := &TemplateView{}
 	var URLs []types.PageData
 	for _, domain := range util.ReadList(config.Crawler.BannedDomains, "\n") {
 		u, err := url.Parse(domain)
@@ -115,11 +111,11 @@ func filteredRoute(res http.ResponseWriter, req *http.Request, config types.Conf
 		p := types.PageData{Title: domain, URL: u.String()}
 		URLs = append(URLs, p)
 	}
-	p.Data = ListData{
+	view.Data = ListData{
 		Title: "Filtered Domains",
 		URLs:  URLs,
 	}
-	renderTemplate(res, config, "list", p)
+	renderView(res, config, "list", view)
 }
 
 func randomRoute(res http.ResponseWriter, req *http.Request, config types.Config, db *sql.DB) {
@@ -127,19 +123,9 @@ func randomRoute(res http.ResponseWriter, req *http.Request, config types.Config
 	http.Redirect(res, req, link, http.StatusSeeOther)
 }
 
-func renderTemplate(res http.ResponseWriter, config types.Config, tmpl string, p *Page) {
-	filename := "html/" + tmpl + ".html"
-	body, err := ioutil.ReadFile(filename)
-	if err != nil {
-		fmt.Println("Error loading template: " + filename)
-		log.Fatalln(err)
-	}
-
-	p.Title = tmpl
-	p.Body = body
-	p.SiteName = config.General.Name
-
-	errTemp := templates.ExecuteTemplate(res, tmpl+".html", p)
+func renderView(res http.ResponseWriter, config types.Config, tmpl string, view *TemplateView) {
+	view.SiteName = config.General.Name
+	errTemp := templates.ExecuteTemplate(res, tmpl+".html", view)
 	util.Check(errTemp)
 }
 
