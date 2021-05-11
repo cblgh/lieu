@@ -1,10 +1,10 @@
 {{ template "head" . }}
 {{ template "nav" . }}
-<main>
-    <form method="GET" class="search-container">
-        <input type="search" minlength="1" required name="q" value="{{ .Data.Query }}" class="search-box">
-        <button type="submit" class="search-button"></button>
-    </form>
+<form method="GET" class="search-container">
+    <input type="search" minlength="1" required name="q" value="{{ .Data.Query }}" class="search-box">
+    <button type="submit" class="search-button"></button>
+</form>
+<main id="results">
     {{ range .Data.Pages }}
     <div class="entry">
         <a class="link" href="{{ .URL }}">{{ .Title }}</a>
