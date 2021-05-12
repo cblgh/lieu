@@ -61,3 +61,15 @@ input[type="search"] {
     color: var(--secondary);
     background: var(--primary);
 }
+
+button {
+    background-image: url("../logo.svg");
+    background-repeat: no-repeat;
+    cursor: pointer;
+    border: 0;
+    transition: opacity 150ms;
+    height: 3.2rem;
+    width: 4.8rem;
+    background-size: cover;
+    background-position: center;
+}
