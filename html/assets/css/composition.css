@@ -7,4 +7,10 @@ header {
 
 main {
     height: 95vh;
+    display: grid;
+    place-items: center;
+}
+
+nav li {
+    display: inline-block;
 }
