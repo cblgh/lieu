@@ -1,6 +1,6 @@
 @import url('inter-ui-web/inter-ui.css');
 
-@font-face {
+/* @font-face {
     font-family: "Noto Serif";
     src: url("NotoSerif-Bold.ttf");
     font-display: swap;
@@ -19,7 +19,33 @@
     font-style: italic;
     src: url("NotoSerif-Italic.ttf");
     font-display: swap;
+} */
+
+@font-face {
+    font-family: 'Noto Serif';
+    src: url('NotoSerif.woff2') format('woff2'), url("NotoSerif-Regular.ttf") format("ttf");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
+
+@font-face {
+    font-family: 'Noto Serif';
+    src: url('NotoSerif-Italic.woff2') format('woff2'), url("NotoSerif-Italic.ttf") format('ttf');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Serif';
+    src: url('NotoSerif-Bold.woff2') format('woff2'), url("NotoSerif-Bold.ttf") format('ttf');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+
 
 /* BASE OR CONFIG */
 
