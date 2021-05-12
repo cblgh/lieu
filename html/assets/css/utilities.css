@@ -6,6 +6,10 @@
     margin-top: 1.6rem;
 }
 
+.flow2>*+* {
+    margin-top: calc(1.6rem * 2);
+}
+
 .flex-grow {
     flex-grow: 1;
 }
