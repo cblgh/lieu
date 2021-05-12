@@ -1,3 +1,4 @@
+@import url("reset.css");
 @import url("base.css");
 
 h1 {
@@ -26,7 +27,8 @@ header {
     align-items: start;
 }
 
-header h2 a, header h2 a:hover {
+header h2 a,
+header h2 a:hover {
     border-bottom: none;
 }
 
@@ -82,8 +84,8 @@ main#about {
 
 .entry {
     -webkit-column-break-inside: avoid;
-    -moz-column-break-inside:avoid;
-    -moz-page-break-inside:avoid;
+    -moz-column-break-inside: avoid;
+    -moz-page-break-inside: avoid;
     page-break-inside: avoid;
     break-inside: avoid-column;
     margin-bottom: 1rem;
@@ -103,4 +105,3 @@ main#about {
         columns: 1 !important;
     }
 }
-
