@@ -11,11 +11,11 @@
         </span>
     </form>
     <article>
-        <ul role="list" class="flow two-columns">
+        <ul role="list" class="flow2 two-columns">
         {{ range .Data.Pages }}
             <li class="entry width-63ch">
-                <a class="link" href="{{ .URL }}">{{ .Title }}</a>
-                <p>{{ .About }}</p>
+                <a class="entry__link" href="{{ .URL }}">{{ .Title }}</a>
+                <p class="entry__text">{{ .About }}</p>
             </li>
         {{ end }}
         </ul>
