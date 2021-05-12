@@ -8,3 +8,28 @@
     /* --primary: #F35363; */
     /* --secondary: black; */
 }
+
+/* Font-size 62.5% allows using rems as pixels. For ex: 1.6rem = 16px. Way es */
+html {
+    font-size: 62.5%;
+}
+
+
+body {
+    font-family: "Inter UI", sans-serif;
+    background: var(--secondary);
+    color: var(--primary);
+    font-size: 1.6rem;
+}
+
+a {
+    cursor: pointer;
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 0.1rem solid var(--primary);
+    word-wrap: break-word;
+}
+
+a:hover {
+    border-bottom-style: dotted;
+}
