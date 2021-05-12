@@ -50,6 +50,14 @@
 
 /* Entries */
 
+.entry {
+    -webkit-column-break-inside: avoid;
+    -moz-column-break-inside: avoid;
+    -moz-page-break-inside: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid-column;
+}
+
 .entry>*+* {
     margin-top: 1.6rem;
 }
