@@ -1,5 +1,7 @@
+/* Block elements are grouped by "family" */
+
 .header-home {
-    padding: 5rem 3rem;
+    padding: 2.1rem 3.2rem;
 }
 
 .header-home_link {
