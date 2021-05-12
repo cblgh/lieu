@@ -39,6 +39,7 @@
     display: flex;
     align-items: center;
     background-color: var(--secondary);
+    margin: 0 5px;
 }
 
 .search__button svg {
