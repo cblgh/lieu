@@ -9,3 +9,17 @@
 .flex-grow {
     flex-grow: 1;
 }
+
+/* .translateY-minus50 {
+    transform: translateY(-50%);
+} */
+
+.grid-items-center {
+    display: grid;
+    place-items: center;
+}
+
+
+.margin-top-100px {
+    margin-top: 100px;
+}

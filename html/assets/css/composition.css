@@ -1,5 +1,6 @@
 header {
     position: fixed;
+    top: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -9,10 +10,13 @@ header {
 
 main {
     height: 100vh;
-    display: grid;
-    place-items: center;
 }
 
 nav li {
     display: inline-block;
+}
+
+article {
+    max-width: 60ch;
+    padding:
 }
