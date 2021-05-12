@@ -50,3 +50,7 @@
     white-space: nowrap;
     width: 1px;
 }
+
+.translateY-50 {
+    transform: translateY(-50%);
+}
