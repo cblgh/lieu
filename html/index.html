@@ -18,7 +18,7 @@
                 {{ .Data.Tagline }}
             </h2>
             <form class="search">
-                <label for="search">Search the webring</label>
+                <label for="search">Search {{ .SiteName }}</label>
                 <span class="search__input">
                     <input type="search" required minlength="1" name="q" placeholder="{{ .Data.Placeholder }}" class="flex-grow" id="search">
                     <button type="submit" class="search__button"></button>
