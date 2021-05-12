@@ -9,3 +9,8 @@
 .flex-grow {
     flex-grow: 1;
 }
+
+.grid-items-center {
+    display: grid;
+    place-items: center;
+}
