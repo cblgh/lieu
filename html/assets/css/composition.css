@@ -10,6 +10,8 @@ header {
 
 main {
     height: 100vh;
+    padding-left: 3.2rem;
+    padding-right: 3.2rem;
 }
 
 nav li {
