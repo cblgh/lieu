@@ -1,3 +1,7 @@
 .italic-text {
     font-style: italic;
 }
+
+.flow>*+* {
+    margin-top: 1.6rem;
+}
