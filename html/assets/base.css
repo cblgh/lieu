@@ -37,7 +37,7 @@ ul {
     padding-left: 1rem;
 }
 
-html {
+body {
     font-family: "Inter UI", sans-serif;
     background: var(--secondary);
     color: var(--primary);
