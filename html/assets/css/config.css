@@ -38,10 +38,12 @@ h1 {
     font-family: "Noto Serif";
     font-weight: 400;
     font-size: 4.8rem;
+    line-height: 1;
 }
 
 h2 {
     font-family: "Noto Serif";
     font-weight: 400;
     font-size: 2.4rem;
+    line-height: 1;
 }
