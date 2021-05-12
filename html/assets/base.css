@@ -37,10 +37,16 @@ ul {
     padding-left: 1rem;
 }
 
+/* Font-size 62.5% allows using rems as pixels. For ex: 1.6rem = 16px. */
+html {
+    font-size: 62.5%;
+}
+
 body {
     font-family: "Inter UI", sans-serif;
     background: var(--secondary);
     color: var(--primary);
+    font-size: 1.6rem;
 }
 
 h1 {
