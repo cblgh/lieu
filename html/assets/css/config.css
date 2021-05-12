@@ -47,3 +47,12 @@ h2 {
     font-size: 2.4rem;
     line-height: 1;
 }
+
+input[type="search"] {
+    font-size: 1.6rem;
+    border-radius: 0.16rem;
+    padding: 0.8rem 0.8rem 0.8rem 1.2rem;
+    border: 0;
+    color: var(--secondary);
+    background: var(--primary);
+}
