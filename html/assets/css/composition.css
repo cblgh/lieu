@@ -1,6 +1,4 @@
 header {
-    position: fixed;
-    top: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -9,7 +7,7 @@ header {
 }
 
 main {
-    height: 100vh;
+    height: calc(100vh - 10rem);
     padding-left: 3.2rem;
     padding-right: 3.2rem;
 }
