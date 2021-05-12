@@ -46,3 +46,20 @@
     width: 100%;
     height: auto;
 }
+
+
+/* Entries */
+
+.entry>*+* {
+    margin-top: 1.6rem;
+}
+
+.entry__link {
+    font-style: italic;
+}
+
+.entry__text {
+    color: var(--primary);
+    opacity: 0.45;
+    line-height: 1.2;
+}
