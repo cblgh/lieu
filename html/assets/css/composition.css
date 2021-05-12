@@ -1,12 +1,14 @@
 header {
+    position: fixed;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 5vh;
+    height: auto;
+    width: 100%;
 }
 
 main {
-    height: 95vh;
+    height: 100vh;
     display: grid;
     place-items: center;
 }
