@@ -1,6 +1,248 @@
 @import url("css/reset.css");
-@import url("css/fonts.css");
-@import url("css/config.css");
-@import url("css/composition.css");
-@import url("css/blocks.css");
-@import url("css/utilities.css");
+
+@import url('../inter-ui-web/inter-ui.css');
+
+@font-face {
+    font-family: "Noto Serif";
+    src: url("../NotoSerif-Bold.ttf");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Noto Serif";
+    font-weight: 400;
+    src: url("../NotoSerif-Regular.ttf");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-style: italic;
+    src: url("../NotoSerif-Italic.ttf");
+    font-display: swap;
+}
+
+/* BASE OR CONFIG */
+
+:root {
+    --primary: #fefefe;
+    --secondary: #000;
+    /* alt colorscheme: 1 */
+    /* --primary: red; */
+    /* --secondary: #fefefe; */
+    /* alt colorscheme: 2 */
+    /* --primary: #F35363; */
+    /* --secondary: black; */
+}
+
+/* Font-size 62.5% allows using rems as pixels. For ex: 1.6rem = 16px. Way es */
+html {
+    font-size: 62.5%;
+}
+
+
+body {
+    font-family: "Inter UI", sans-serif;
+    background: var(--secondary);
+    color: var(--primary);
+    font-size: 1.6rem;
+}
+
+a {
+    cursor: pointer;
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 0.1rem solid var(--primary);
+    word-wrap: break-word;
+}
+
+a:hover {
+    border-bottom-style: dotted;
+}
+
+p {
+    hyphens: auto;
+}
+
+h1 {
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-size: 4.8rem;
+    line-height: 1;
+}
+
+h2 {
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-size: 2.4rem;
+    line-height: 1;
+}
+
+input[type="search"] {
+    font-size: 1.6rem;
+    border-radius: 0.16rem;
+    padding: 0.8rem 0.8rem 0.8rem 1.2rem;
+    border: 0;
+    color: var(--secondary);
+    background: var(--primary);
+    width: 100%;
+    max-width: 30rem;
+}
+
+ul {
+    padding: 0;
+}
+
+
+/* COMPOSITION */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: auto;
+    width: 100%;
+}
+
+main {
+    height: calc(100vh - 10rem);
+    padding-left: 3.2rem;
+    padding-right: 3.2rem;
+}
+
+nav li {
+    display: inline-block;
+}
+
+
+/* BLOCKS */
+
+/* Block elements are grouped by "family" */
+
+.header-home {
+    padding: 2.1rem 3.2rem;
+}
+
+.header-home_link {
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-size: 2.4rem;
+    border-bottom: none;
+}
+
+.header-home_navigation *+* {
+    margin-left: 1.6rem;
+}
+
+
+/* Search block */
+
+.search {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.search__input {
+    display: flex;
+    width: 100%;
+}
+
+.search__button {
+    cursor: pointer;
+    border: 0;
+    transition: opacity 150ms;
+    height: 4rem;
+    min-width: 4.8rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    background-color: var(--secondary);
+    margin: 0 5px;
+}
+
+.search__button svg {
+    width: 100%;
+    height: auto;
+}
+
+
+/* Entries */
+
+.entry {
+    -webkit-column-break-inside: avoid;
+    -moz-column-break-inside: avoid;
+    -moz-page-break-inside: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid-column;
+}
+
+.entry>*+* {
+    margin-top: 1.6rem;
+}
+
+.entry__link {
+    font-style: italic;
+}
+
+.entry__text {
+    color: var(--primary);
+    opacity: 0.55;
+    line-height: 1.2;
+}
+
+/* UTILITY CLASSES */
+
+.italic-text {
+    font-style: italic;
+}
+
+.flow>*+* {
+    margin-top: 1.6rem;
+}
+
+.flow2>*+* {
+    margin-top: calc(1.6rem * 2);
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.grid-items-center {
+    display: grid;
+    place-items: center;
+}
+
+.width-63ch {
+    max-width: 63ch;
+}
+
+.width-126ch {
+    max-width: 126ch;
+}
+
+.two-columns {
+    columns: 2;
+}
+
+@media (max-width: 700px) {
+    .two-columns {
+        columns: 1;
+    }
+}
+
+.visually-hidden {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+.translateY-50 {
+    transform: translateY(-50%);
+}
