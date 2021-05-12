@@ -1,6 +1,14 @@
-.header_home-link {
+.header-home {
+    padding: 5rem 3rem;
+}
+
+.header-home_link {
     font-family: "Noto Serif";
     font-weight: 400;
     font-size: 2.4rem;
     border-bottom: none;
+}
+
+.header-home_navigation *+* {
+    margin-left: 1.6rem;
 }
