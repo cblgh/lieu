@@ -1,34 +1,3 @@
-@import url('inter-ui-web/inter-ui.css');
-
-@font-face {
-    font-family: "Noto Serif";
-    src: url("NotoSerif-Bold.ttf");
-}
-
-@font-face {
-    font-family: "Noto Serif";
-    font-weight: 400;
-    src: url("NotoSerif-Regular.ttf");
-}
-
-@font-face {
-    font-family: "Noto Serif";
-    font-weight: 400;
-    font-style: italic;
-    src: url("NotoSerif-Italic.ttf");
-}
-
-:root {
-    --primary: #fefefe;
-    --secondary: #000;
-    /* alt colorscheme: 1 */
-    /* --primary: red; */
-    /* --secondary: #fefefe; */
-    /* alt colorscheme: 2 */
-    /* --primary: #F35363; */
-    /* --secondary: black; */
-}
-
 li {
     list-style-type: circle;
 }
@@ -37,7 +6,7 @@ ul {
     padding-left: 1rem;
 }
 
-/* Font-size 62.5% allows using rems as pixels. For ex: 1.6rem = 16px. */
+/* Font-size 62.5% allows using rems as pixels. For ex: 1.6rem = 16px. Way es */
 html {
     font-size: 62.5%;
 }
