@@ -2,14 +2,14 @@
 
 @font-face {
     font-family: "Noto Serif";
-    src: url("NotoSerif-Bold.ttf");
+    src: url("../NotoSerif-Bold.ttf");
     font-display: swap;
 }
 
 @font-face {
     font-family: "Noto Serif";
     font-weight: 400;
-    src: url("NotoSerif-Regular.ttf");
+    src: url("../NotoSerif-Regular.ttf");
     font-display: swap;
 }
 
@@ -17,6 +17,6 @@
     font-family: "Noto Serif";
     font-weight: 400;
     font-style: italic;
-    src: url("NotoSerif-Italic.ttf");
+    src: url("../NotoSerif-Italic.ttf");
     font-display: swap;
 }
