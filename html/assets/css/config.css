@@ -48,6 +48,11 @@ h2 {
     line-height: 1;
 }
 
+form {
+    display: flex;
+    align-items: center;
+}
+
 input[type="search"] {
     font-size: 1.6rem;
     border-radius: 0.16rem;
