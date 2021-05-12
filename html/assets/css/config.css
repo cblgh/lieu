@@ -60,3 +60,7 @@ input[type="search"] {
     color: var(--secondary);
     background: var(--primary);
 }
+
+ul {
+    padding: 0;
+}
