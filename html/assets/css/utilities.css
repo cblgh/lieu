@@ -22,3 +22,13 @@
 .width-63ch {
     max-width: 63ch;
 }
+
+.two-columns {
+    columns: 2;
+}
+
+@media (max-width: 700px) {
+    .two-columns {
+        columns: 1;
+    }
+}
