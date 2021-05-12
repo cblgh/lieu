@@ -1,0 +1,19 @@
+@import url('../inter-ui-web/inter-ui.css');
+
+@font-face {
+    font-family: "Noto Serif";
+    src: url("NotoSerif-Bold.ttf");
+}
+
+@font-face {
+    font-family: "Noto Serif";
+    font-weight: 400;
+    src: url("NotoSerif-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-style: italic;
+    src: url("NotoSerif-Italic.ttf");
+}
