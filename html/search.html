@@ -1,9 +1,11 @@
 {{ template "head" . }}
 {{ template "nav" . }}
-<form method="GET" class="search-container">
+<form method="GET" class="search">
     <label for="search">Search the webring</label>
-    <input type="search" minlength="1" required name="q" placeholder="Search" value="{{ .Data.Query }}" class="search-box" id="search">
-    <button type="submit" class="search-button"></button>
+    <span class="search__input">
+        <input type="search" minlength="1" required name="q" placeholder="Search" value="{{ .Data.Query }}" class="search-box" id="search">
+        <button type="submit" class="search__button"></button>
+    </span>
 </form>
 <main id="results">
     {{ range .Data.Pages }}

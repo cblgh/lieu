@@ -17,9 +17,12 @@
             <h2 class="italic-text">
                 {{ .Data.Tagline }}
             </h2>
-            <form class="search-container">
-                <input type="search" required minlength="1" name="q" placeholder="{{ .Data.Placeholder }}" class="flex-grow">
-                <button type="submit" class="search-button"></button>
+            <form class="search">
+                <label for="search">Search the webring</label>
+                <span class="search__input">
+                    <input type="search" required minlength="1" name="q" placeholder="{{ .Data.Placeholder }}" class="flex-grow" id="search">
+                    <button type="submit" class="search__button"></button>
+                </span>
             </form>
         </div>
     </article>
