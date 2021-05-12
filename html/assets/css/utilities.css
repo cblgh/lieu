@@ -5,3 +5,7 @@
 .flow>*+* {
     margin-top: 1.6rem;
 }
+
+.flex-grow {
+    flex-grow: 1;
+}
