@@ -34,6 +34,10 @@ a:hover {
     border-bottom-style: dotted;
 }
 
+p {
+    hyphens: auto;
+}
+
 h1 {
     font-family: "Noto Serif";
     font-weight: 400;
