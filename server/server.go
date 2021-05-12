@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"html/template"
@@ -47,11 +48,11 @@ type AboutData struct {
 	RingLink     string
 }
 
-const useURLTitles = true
-
 var templates = template.Must(template.ParseFiles(
 	"html/head.html", "html/nav.html", "html/footer.html",
 	"html/about.html", "html/index.html", "html/list.html", "html/search.html", "html/webring.html"))
+
+const useURLTitles = true
 
 func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) {
 	var query string
@@ -138,7 +139,15 @@ func (h RequestHandler) webringRoute(res http.ResponseWriter, req *http.Request)
 
 func (h RequestHandler) renderView(res http.ResponseWriter, tmpl string, view *TemplateView) {
 	view.SiteName = h.config.General.Name
-	errTemp := templates.ExecuteTemplate(res, tmpl+".html", view)
+	var errTemp error
+	if _, exists := os.LookupEnv("LIEU_DEV"); exists {
+		var templates = template.Must(template.ParseFiles(
+			"html/head.html", "html/nav.html", "html/footer.html",
+			"html/about.html", "html/index.html", "html/list.html", "html/search.html", "html/webring.html"))
+		errTemp = templates.ExecuteTemplate(res, tmpl+".html", view)
+	} else {
+		errTemp = templates.ExecuteTemplate(res, tmpl+".html", view)
+	}
 	util.Check(errTemp)
 }
 
