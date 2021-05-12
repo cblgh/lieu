@@ -4,3 +4,7 @@
     font-size: 2.4rem;
     border-bottom: none;
 }
+
+.italic-text {
+    font-style: italic;
+}
