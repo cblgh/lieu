@@ -9,7 +9,7 @@
     </nav>
 </header>
 <main class="grid-items-center">
-    <article class="translateY-50">
+    <article class="translateY-75">
         <div class="flow">
             <h1>
                 {{ .SiteName }}
@@ -18,11 +18,11 @@
                 {{ .Data.Tagline }}
             </h2>
             <form class="search">
-                <label for="search">Search {{ .SiteName }}</label>
+                <label class="visually-hidden" for="search">Search {{ .SiteName }}</label>
                 <span class="search__input">
                     <input type="search" required minlength="1" name="q" placeholder="{{ .Data.Placeholder }}" class="flex-grow" id="search">
                     <button type="submit" class="search__button" aria-label="Search" title="Search">
-                        <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg" baseProfile="full" style="background:#000" width="42" height="30" fill="none"><path d="M90 135q60-60 120-60 0 0 0 0 60 0 120 60m-120 60a60 60 0 01-60-60 60 60 0 0160-60 60 60 0 0160 60 60 60 0 01-60 60m45-15h0l30 30m-75-15h0v45m-45-60h0l-30 30" stroke-width="81" stroke-linecap="square" stroke-linejoin="round" stroke="#fff"/></svg>
+                        <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg" baseProfile="full" style="background:var(--secondary)" width="42" height="30" fill="none"><path d="M90 135q60-60 120-60 0 0 0 0 60 0 120 60m-120 60a60 60 0 01-60-60 60 60 0 0160-60 60 60 0 0160 60 60 60 0 01-60 60m45-15h0l30 30m-75-15h0v45m-45-60h0l-30 30" stroke-width="81" stroke-linecap="square" stroke-linejoin="round" stroke="var(--primary)"/></svg>
                     </button>
                 </span>
             </form>

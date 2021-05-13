@@ -99,7 +99,7 @@ nav li {
     padding: 2.1rem 3.2rem;
 }
 
-.header-home_link {
+.header-home_link, .header-home_link:hover {
     font-family: "Noto Serif";
     font-weight: 400;
     font-size: 2.4rem;
@@ -218,8 +218,8 @@ nav li {
     width: 1px;
 }
 
-.translateY-50 {
-    transform: translateY(-50%);
+.translateY-75 {
+    transform: translateY(-75%);
 }
 
 @import url('inter-ui-web/inter-ui.css');
