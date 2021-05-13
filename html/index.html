@@ -1,26 +1,32 @@
 {{ template "head" . }}
-<header>
-    <h2><a href="https://github.com/cblgh/lieu">Lieu</a></h2>
-    <ul>
-        <li><a href="/webring">Webring</a></li>
-        <li><a href="/about">About</a></li>
-    </ul>
+<header class="header-home">
+    <a class="header-home_link" href="https://github.com/cblgh/lieu">Lieu</a>
+    <nav>
+        <ul class="header-home_navigation" role='list'>
+            <li><a href="/webring">Webring</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
 </header>
-<div class="clear"></div>
-<main>
-    <div class="lieu-container">
-        <div>
+<main class="grid-items-center">
+    <article class="translateY-50">
+        <div class="flow">
             <h1>
                 {{ .SiteName }}
             </h1>
-            <h2>
+            <h2 class="italic-text">
                 {{ .Data.Tagline }}
             </h2>
-            <form class="search-container">
-                <input type="search" required minlength="1" name="q" placeholder="{{ .Data.Placeholder }}" class="search-box">
-                <button type="submit" class="search-button"></button>
+            <form class="search">
+                <label for="search">Search {{ .SiteName }}</label>
+                <span class="search__input">
+                    <input type="search" required minlength="1" name="q" placeholder="{{ .Data.Placeholder }}" class="flex-grow" id="search">
+                    <button type="submit" class="search__button" aria-label="Search" title="Search">
+                        <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg" baseProfile="full" style="background:#000" width="42" height="30" fill="none"><path d="M90 135q60-60 120-60 0 0 0 0 60 0 120 60m-120 60a60 60 0 01-60-60 60 60 0 0160-60 60 60 0 0160 60 60 60 0 01-60 60m45-15h0l30 30m-75-15h0v45m-45-60h0l-30 30" stroke-width="81" stroke-linecap="square" stroke-linejoin="round" stroke="#fff"/></svg>
+                    </button>
+                </span>
             </form>
         </div>
-    </div>
+    </article>
 </main>
 {{ template "footer" . }}

@@ -1,106 +1,250 @@
-@import url("base.css");
+/* BASE OR CONFIG */
+
+:root {
+    --primary: #fefefe;
+    --secondary: #000;
+    /* alt colorscheme: 1 */
+    /* --primary: red; */
+    /* --secondary: #fefefe; */
+    /* alt colorscheme: 2 */
+    /* --primary: #F35363; */
+    /* --secondary: black; */
+}
+
+/* Font-size 62.5% allows using rems as pixels. For ex: 1.6rem = 16px. Way es */
+html {
+    font-size: 62.5%;
+}
+
+
+body {
+    font-family: "Inter UI", sans-serif;
+    background: var(--secondary);
+    color: var(--primary);
+    font-size: 1.6rem;
+}
+
+a {
+    cursor: pointer;
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 0.1rem solid var(--primary);
+    word-wrap: break-word;
+}
+
+a:hover {
+    border-bottom-style: dotted;
+}
+
+p {
+    hyphens: auto;
+}
 
 h1 {
-    font-size: 3rem;
-    margin-bottom: 0rem;
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-size: 4.8rem;
+    line-height: 1;
 }
 
 h2 {
     font-family: "Noto Serif";
     font-weight: 400;
-    font-size: 1.5rem;
-    margin-top: 0;
-    margin-bottom: 1rem;
+    font-size: 2.4rem;
+    line-height: 1;
 }
 
-.lieu-container h2 {
-    font-style: italic;
+input[type="search"] {
+    font-size: 1.6rem;
+    border-radius: 0.16rem;
+    padding: 0.8rem 0.8rem 0.8rem 1.2rem;
+    border: 0;
+    color: var(--secondary);
+    background: var(--primary);
+    width: 100%;
+    max-width: 30rem;
 }
+
+ul {
+    padding: 0;
+}
+
+
+/* COMPOSITION */
 
 header {
-    clear: both;
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-columns: max-content max-content 1fr;
-    grid-column-gap: 1rem;
-    align-items: start;
-}
-
-header h2 a, header h2 a:hover {
-    border-bottom: none;
-}
-
-header ul {
-    justify-self: end;
-    margin-top: 0.5rem;
-    grid-column-start: 3;
-}
-
-header ul li {
-    margin-left: 1.5rem;
-    display: inline-block;
-}
-
-header ul li:first-of-type {
-    margin-left: 0;
-}
-
-main {
-    display: grid;
-    justify-items: left;
-    align-items: left;
-    margin-top: 1rem;
-}
-
-main#results {
-    display: block;
-    margin-top: 4rem;
-    columns: 2;
-    max-width: 1200px;
-}
-
-main#about {
-    max-width: 600px;
-}
-
-.lieu {
-    font-family: "Noto Serif";
-    font-weight: 400;
-}
-
-.search-container {
-    grid-template-columns: 19rem 3rem;
-}
-
-.lieu-container {
-    display: grid;
-    justify-items: center;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-top: 5rem;
+    height: auto;
     width: 100%;
 }
 
+main {
+    height: calc(100vh - 10rem);
+    padding-left: 3.2rem;
+    padding-right: 3.2rem;
+}
+
+nav li {
+    display: inline-block;
+}
+
+
+/* BLOCKS */
+
+/* Block elements are grouped by "family" */
+
+.header-home {
+    padding: 2.1rem 3.2rem;
+}
+
+.header-home_link {
+    font-family: "Noto Serif";
+    font-weight: 400;
+    font-size: 2.4rem;
+    border-bottom: none;
+}
+
+.header-home_navigation *+* {
+    margin-left: 1.6rem;
+}
+
+
+/* Search block */
+
+.search {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.search__input {
+    display: flex;
+    width: 100%;
+}
+
+.search__button {
+    cursor: pointer;
+    border: 0;
+    transition: opacity 150ms;
+    height: 4rem;
+    min-width: 4.8rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    background-color: var(--secondary);
+    margin: 0 5px;
+}
+
+.search__button svg {
+    width: 100%;
+    height: auto;
+}
+
+
+/* Entries */
+
 .entry {
     -webkit-column-break-inside: avoid;
-    -moz-column-break-inside:avoid;
-    -moz-page-break-inside:avoid;
+    -moz-column-break-inside: avoid;
+    -moz-page-break-inside: avoid;
     page-break-inside: avoid;
     break-inside: avoid-column;
-    margin-bottom: 1rem;
 }
 
-.entry p {
-    color: var(--primary);
-    opacity: 0.45;
+.entry>*+* {
+    margin-top: 1.6rem;
 }
 
-.link {
+.entry__link {
     font-style: italic;
 }
 
-@media only screen and (min-device-width : 320px) and (max-device-width : 720px) {
-    main {
-        columns: 1 !important;
+.entry__text {
+    color: var(--primary);
+    opacity: 0.55;
+    line-height: 1.2;
+}
+
+/* UTILITY CLASSES */
+
+.italic-text {
+    font-style: italic;
+}
+
+.flow>*+* {
+    margin-top: 1.6rem;
+}
+
+.flow2>*+* {
+    margin-top: calc(1.6rem * 2);
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.grid-items-center {
+    display: grid;
+    place-items: center;
+}
+
+.width-63ch {
+    max-width: 63ch;
+}
+
+.width-126ch {
+    max-width: 126ch;
+}
+
+.two-columns {
+    columns: 2;
+}
+
+@media (max-width: 700px) {
+    .two-columns {
+        columns: 1;
     }
 }
 
+.visually-hidden {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+.translateY-50 {
+    transform: translateY(-50%);
+}
+
+@import url('inter-ui-web/inter-ui.css');
+
+
+@font-face {
+    font-family: 'Noto Serif';
+    src: url('NotoSerif.woff2') format('woff2'), url("NotoSerif-Regular.ttf") format("ttf");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Serif';
+    src: url('NotoSerif-Italic.woff2') format('woff2'), url("NotoSerif-Italic.ttf") format('ttf');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Serif';
+    src: url('NotoSerif-Bold.woff2') format('woff2'), url("NotoSerif-Bold.ttf") format('ttf');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}

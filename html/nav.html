@@ -1,11 +1,11 @@
 {{ define "nav" }}
-<header>
-    <h2>
-        <a href="/">{{ .SiteName }}</a>
-    </h2>
-    <ul>
-        <li><a href="/webring">Webring</a></li>
-        <li><a href="/about">About</a></li>
-    </ul>
+<header class="header-home">
+        <a class="header-home_link" href="/">{{ .SiteName }}</a>
+    <nav>
+        <ul class="header-home_navigation" role='list'>
+            <li><a href="/webring">Webring</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
 </header>
 {{ end }}

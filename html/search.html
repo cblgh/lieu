@@ -1,14 +1,24 @@
 {{ template "head" . }}
 {{ template "nav" . }}
-<form method="GET" class="search-container">
-    <input type="search" minlength="1" required name="q" placeholder="Search" value="{{ .Data.Query }}" class="search-box">
-    <button type="submit" class="search-button"></button>
-</form>
-<main id="results">
-    {{ range .Data.Pages }}
-    <div class="entry">
-        <a class="link" href="{{ .URL }}">{{ .Title }}</a>
-        <p>{{ .About }}</p>
-    </div>
-    {{ end }}
+<main id="results" class="flow2">
+    <h1>Results</h1>
+    <form method="GET" class="search">
+        <label for="search">Search {{ .SiteName }}</label>
+        <span class="search__input">
+            <input type="search" minlength="1" required name="q" placeholder="Search" value="{{ .Data.Query }}" class="search-box" id="search">
+            <button type="submit" class="search__button" aria-label="Search" title="Search">
+                <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg" baseProfile="full" style="background:#000" width="42" height="30" fill="none"><path d="M90 135q60-60 120-60 0 0 0 0 60 0 120 60m-120 60a60 60 0 01-60-60 60 60 0 0160-60 60 60 0 0160 60 60 60 0 01-60 60m45-15h0l30 30m-75-15h0v45m-45-60h0l-30 30" stroke-width="81" stroke-linecap="square" stroke-linejoin="round" stroke="#fff"/></svg>
+            </button>
+        </span>
+    </form>
+    <article>
+        <ul role="list" class="flow2 two-columns width-126ch">
+        {{ range .Data.Pages }}
+            <li class="entry">
+                <a class="entry__link" href="{{ .URL }}">{{ .Title }}</a>
+                <p class="entry__text">{{ .About }}</p>
+            </li>
+        {{ end }}
+        </ul>
+    </article>
 {{ template "footer" . }}

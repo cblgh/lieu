@@ -1,21 +1,24 @@
 {{ template "head" . }}
 {{ template "nav" . }}
 <main id="about">
-    <p>
-        <span class="lieu">Lieu</span>—an alternative search engine. Created in response to the environs of
-        apathy concerning the use of hypertext search and discovery. In <span class="lieu">Lieu</span>, the
-        internet is not what is made searchable, but instead one's own neighbourhood. Put differently,
-        <span class="lieu">Lieu</span> is a neighbourhood search engine, a way for personal webrings to increase
-        serendipitous connexions.
-    </p>
-    <p>
-        This instance indexes <a href="{{ .Data.RingLink }}">{{ .Data.WebringName }}</a>—{{ .Data.DomainCount }} domains,
-        {{ .Data.PageCount }} pages, {{ .Data.TermCount }} search terms.
-        Some domains of the webring have been filtered out for a better search experience,
-        see <a href="{{ .Data.FilteredLink }}">the filtered list</a>.
-        Visit a <a href="/random">random page</a>.
-    </p>
-    <p><span class="lieu">Lieu</span> was created by <a href="https://cblgh.org/support.html">cblgh</a> at the onset of 2021.</p>
-    <p>For Lieu's AGPL licensed source code, <a href="https://github.com/cblgh/lieu">the repository</a>.</p>
+    <article class="flow width-63ch">
+        <h1>About</h1>
+        <p>
+            <span class="lieu">Lieu</span>—an alternative search engine. Created in response to the environs of
+            apathy concerning the use of hypertext search and discovery. In <span class="lieu">Lieu</span>, the
+            internet is not what is made searchable, but instead one's own neighbourhood. Put differently,
+            <span class="lieu">Lieu</span> is a neighbourhood search engine, a way for personal webrings to increase
+            serendipitous connexions.
+        </p>
+        <p>
+            This instance indexes <a href="{{ .Data.RingLink }}">{{ .Data.WebringName }}</a>—{{ .Data.DomainCount }} domains,
+            {{ .Data.PageCount }} pages, {{ .Data.TermCount }} search terms.
+            Some domains of the webring have been filtered out for a better search experience,
+            see <a href="{{ .Data.FilteredLink }}">the filtered list</a>.
+            Visit a <a href="/random">random page</a>.
+        </p>
+        <p><span class="lieu">Lieu</span> was created by <a href="https://cblgh.org/support.html">cblgh</a> at the onset of 2021.</p>
+        <p>For Lieu's AGPL licensed source code, <a href="https://github.com/cblgh/lieu">the repository</a>.</p>
+    </article>
 </main>
 {{ template "footer" . }}

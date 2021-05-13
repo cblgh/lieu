@@ -1,66 +1,31 @@
-@import url('inter-ui-web/inter-ui.css');
-
-@font-face {
-  font-family: "Noto Serif";
-  src: url("NotoSerif-Bold.ttf");
-}
-
-@font-face {
-  font-family: "Noto Serif";
-  font-weight: 400;
-  src: url("NotoSerif-Regular.ttf");
-}
-
-@font-face {
-  font-family: "Noto Serif";
-  font-weight: 400;
-  font-style: italic;
-  src: url("NotoSerif-Italic.ttf");
-}
-
-:root {
-    --primary: #fefefe;
-    --secondary: #000;
-    /* alt colorscheme: 1 */
-    /* --primary: red; */
-    /* --secondary: #fefefe; */
-    /* alt colorscheme: 2 */
-    /* --primary: #F35363; */
-    /* --secondary: black; */
-}
-
 li {
     list-style-type: circle;
 }
 
 ul {
-    margin: 0;
     padding-left: 1rem;
 }
 
+/* Font-size 62.5% allows using rems as pixels. For ex: 1.6rem = 16px. Way es */
 html {
-    font-family: "Inter UI", sans-serif;
-    background: var(--secondary);
-    color: var(--primary);
-    padding-bottom: 2rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    margin-top: 2rem;
+    font-size: 62.5%;
 }
 
 body {
-    margin: 0;
+    font-family: "Inter UI", sans-serif;
+    background: var(--secondary);
+    color: var(--primary);
+    font-size: 1.6rem;
 }
 
 h1 {
     font-family: "Noto Serif";
     font-weight: 400;
     font-size: 3rem;
-    margin-bottom: 1rem;
-    margin-top: 0;
 }
 
-h1 > a, h1 > a:hover {
+h1>a,
+h1>a:hover {
     border-bottom: none;
 }
 
@@ -78,20 +43,19 @@ a:hover {
 
 p {
     hyphens: auto;
-    margin-bottom: 1.5rem;
+    /* margin-bottom: 1.5rem; */
 }
 
 .entry {
     -webkit-column-break-inside: avoid;
-    -moz-column-break-inside:avoid;
-    -moz-page-break-inside:avoid;
+    -moz-column-break-inside: avoid;
+    -moz-page-break-inside: avoid;
     page-break-inside: avoid;
     break-inside: avoid-column;
 }
 
 .search-container {
     display: grid;
-    margin-bottom: 2rem;
     height: 2.5rem;
     align-items: center;
     grid-template-columns: 16rem 3rem;
@@ -111,7 +75,7 @@ p {
 
 .search-button {
     background-image: url("logo.svg");
-	cursor: pointer;
+    cursor: pointer;
     border: 0;
     transition: opacity 150ms;
     height: 2rem;
@@ -132,26 +96,27 @@ p {
     font-style: normal;
 }
 
-@media 
-only screen 
-and (min-device-width : 320px) 
-and (max-device-width : 720px)
-{ 
+.lieu-link {
+    font-size: 3rem;
+    font-family: "Noto Serif";
+    font-weight: 400;
+    text-decoration: none;
+}
+
+@media only screen and (min-device-width : 320px) and (max-device-width : 720px) {
     html {
         padding-left: 0.75rem;
         padding-right: 0.75rem;
         font-size: 30pt;
         max-width: 100vw !important;
     }
+
     #results {
         display: grid;
     }
 }
 
-@media 
-only screen
-and (min-device-width : 320px) 
-and (max-device-width : 374px) {
+@media only screen and (min-device-width : 320px) and (max-device-width : 374px) {
     html {
         font-size: 40pt;
     }

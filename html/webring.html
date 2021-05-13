@@ -1,9 +1,15 @@
 {{ template "head" . }}
 {{ template "nav" . }}
-    {{ range .Data.Domains }}
-        <div class="entry">
-            <a class="link" href="{{ .URL }}">{{ .Title }}</a>
-            <p>{{ .About }}</p>
-        </div>
-    {{ end }}
+    <main class="flow2">
+        <article>
+                <ul role="list" class="flow2 two-columns width-126ch">
+                {{ range .Data.Domains }}
+                    <li class="entry">
+                        <a class="entry__link" href="{{ .URL }}">{{ .Title }}</a>
+                        <p class="entry__text">{{ .About }}</p>
+                    </li>
+                {{ end }}
+                </ul>
+        </article>
+    </main>
 {{ template "footer" . }}
