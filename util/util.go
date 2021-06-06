@@ -50,7 +50,7 @@ func Humanize(n int) string {
 		return fmt.Sprintf("%dm", n/1000000)
 	}
 
-	return string(n)
+	return fmt.Sprintf("%d", n)
 }
 
 func Contains(arr []string, query string) bool {
