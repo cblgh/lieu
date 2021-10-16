@@ -69,6 +69,7 @@ func createTables(db *sql.DB) {
         url TEXT NOT NULL,
         FOREIGN KEY(url) REFERENCES pages(url)
     )`,
+    `CREATE VIRTUAL TABLE IF NOT EXISTS external_links USING fts5 (url, tokenize="trigram")`,
 	}
 
 	for _, query := range queries {
@@ -98,6 +99,29 @@ func SearchWordsByCount(db *sql.DB, words []string) []types.PageData {
 	return searchWords(db, words, false)
 }
 
+func FulltextSearchWords(db *sql.DB, phrase string) []types.PageData {
+	query := fmt.Sprintf(`SELECT url from external_links WHERE url MATCH ? GROUP BY url ORDER BY RANDOM() LIMIT 30`)
+
+	stmt, err := db.Prepare(query)
+	util.Check(err)
+	defer stmt.Close()
+
+	rows, err := stmt.Query(phrase)
+	util.Check(err)
+	defer rows.Close()
+
+  var pageData types.PageData
+  var pages []types.PageData
+  for rows.Next() {
+    if err := rows.Scan(&pageData.URL); err != nil {
+      log.Fatalln(err)
+    }
+    pageData.Title = pageData.URL
+    pages = append(pages, pageData)
+  }
+  return pages
+}
+
 func GetDomainCount(db *sql.DB) int {
 	return countQuery(db, "domains")
 }
@@ -121,6 +145,19 @@ func GetRandomDomain(db *sql.DB) string {
 		util.Check(err)
 	}
 	return domain
+}
+
+func GetRandomExternalLink(db *sql.DB) string {
+	rows, err := db.Query("SELECT url FROM external_links ORDER BY RANDOM() LIMIT 1;")
+	util.Check(err)
+	defer rows.Close()
+
+	var link string
+	for rows.Next() {
+		err = rows.Scan(&link)
+		util.Check(err)
+	}
+	return link
 }
 
 func GetRandomPage(db *sql.DB) string {
@@ -239,6 +276,20 @@ func InsertManyWords(db *sql.DB, batch []types.SearchFragment) {
 	}
 
 	stmt := fmt.Sprintf(`INSERT OR IGNORE INTO inv_index(word, url, score) VALUES %s`, strings.Join(values, ","))
+	_, err := db.Exec(stmt, args...)
+	util.Check(err)
+}
+
+func InsertManyExternalLinks(db *sql.DB, externalLinks []string) {
+	values := make([]string, 0, len(externalLinks))
+	args := make([]interface{}, 0, len(externalLinks))
+
+	for _, externalLink := range externalLinks {
+		values = append(values, "(?)")
+		args = append(args, externalLink)
+	}
+
+	stmt := fmt.Sprintf(`INSERT OR IGNORE INTO external_links(url) VALUES %s`, strings.Join(values, ","))
 	_, err := db.Exec(stmt, args...)
 	util.Check(err)
 }

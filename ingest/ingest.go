@@ -80,6 +80,7 @@ func Ingest(config types.Config) {
 	var count int
 	var batchsize = 100
 	batch := make([]types.SearchFragment, 0, 0)
+  var externalLinks []string
 
 	scanner := bufio.NewScanner(buf)
 	for scanner.Scan() {
@@ -141,6 +142,8 @@ func Ingest(config types.Config) {
 			page.Lang = rawdata
 		case "keywords":
 			processed = strings.Split(strings.ReplaceAll(payload, ", ", ","), ",")
+    case "non-webring-link":
+      externalLinks = append(externalLinks, payload)
 		default:
 			continue
 		}
@@ -162,7 +165,8 @@ func Ingest(config types.Config) {
 		}
 
 		if len(pages) > batchsize {
-			ingestBatch(db, batch, pages)
+			ingestBatch(db, batch, pages, externalLinks)
+      externalLinks = make([]string, 0, 0)
 			batch = make([]types.SearchFragment, 0, 0)
 			// TODO: make sure we don't partially insert any page data
 			pages = make(map[string]types.PageData)
@@ -174,7 +178,7 @@ func Ingest(config types.Config) {
 	util.Check(err)
 }
 
-func ingestBatch(db *sql.DB, batch []types.SearchFragment, pageMap map[string]types.PageData) {
+func ingestBatch(db *sql.DB, batch []types.SearchFragment, pageMap map[string]types.PageData, links []string) {
 	pages := make([]types.PageData, len(pageMap))
 	i := 0
 	for k := range pageMap {
@@ -185,6 +189,7 @@ func ingestBatch(db *sql.DB, batch []types.SearchFragment, pageMap map[string]ty
 	database.InsertManyDomains(db, pages)
 	database.InsertManyPages(db, pages)
 	database.InsertManyWords(db, batch)
+  database.InsertManyExternalLinks(db, links)
 	log.Println("finished ingesting batch")
 }
 

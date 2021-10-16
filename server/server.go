@@ -89,6 +89,35 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 	h.renderView(res, "search", view)
 }
 
+func (h RequestHandler) externalSearchRoute(res http.ResponseWriter, req *http.Request) {
+	var query string
+	view := &TemplateView{}
+
+	if req.Method == http.MethodGet {
+		params := req.URL.Query()
+		if words, exists := params["q"]; exists && words[0] != "" {
+			query = words[0]
+		}
+	}
+
+	pages := database.FulltextSearchWords(h.db, query)
+
+	if useURLTitles {
+		for i, pageData := range pages {
+			prettyURL, err := url.QueryUnescape(strings.TrimPrefix(strings.TrimPrefix(pageData.URL, "http://"), "https://"))
+			util.Check(err)
+			pageData.Title = prettyURL
+			pages[i] = pageData
+		}
+	}
+
+	view.Data = SearchData{
+		Query: query,
+		Pages: pages,
+	}
+	h.renderView(res, "search", view)
+}
+
 func (h RequestHandler) aboutRoute(res http.ResponseWriter, req *http.Request) {
 	view := &TemplateView{}
 
@@ -133,6 +162,11 @@ func (h RequestHandler) randomRoute(res http.ResponseWriter, req *http.Request) 
 	http.Redirect(res, req, link, http.StatusSeeOther)
 }
 
+func (h RequestHandler) randomExternalRoute(res http.ResponseWriter, req *http.Request) {
+	link := database.GetRandomExternalLink(h.db)
+	http.Redirect(res, req, link, http.StatusSeeOther)
+}
+
 func (h RequestHandler) webringRoute(res http.ResponseWriter, req *http.Request) {
 	http.Redirect(res, req, h.config.General.URL, http.StatusSeeOther)
 }
@@ -157,6 +191,8 @@ func Serve(config types.Config) {
 
 	http.HandleFunc("/about", handler.aboutRoute)
 	http.HandleFunc("/", handler.searchRoute)
+	http.HandleFunc("/external", handler.externalSearchRoute)
+	http.HandleFunc("/random/external", handler.randomExternalRoute)
 	http.HandleFunc("/random", handler.randomRoute)
 	http.HandleFunc("/webring", handler.webringRoute)
 	http.HandleFunc("/filtered", handler.filteredRoute)
