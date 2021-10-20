@@ -95,6 +95,11 @@ func SearchWordsByScore(db *sql.DB, words []string) []types.PageData {
 	return searchWords(db, words, true)
 }
 
+func SearchWordsBySite(db *sql.DB, words []string, domain string) []types.PageData {
+	// search words by site is same as search words by score, but adds a domain condition
+	return searchWords(db, words, true, domain)
+}
+
 func SearchWordsByCount(db *sql.DB, words []string) []types.PageData {
 	return searchWords(db, words, false)
 }
@@ -190,12 +195,22 @@ func countQuery(db *sql.DB, table string) int {
 	return count
 }
 
-func searchWords(db *sql.DB, words []string, searchByScore bool) []types.PageData {
+func searchWords(db *sql.DB, words []string, searchByScore bool, domain ...string) []types.PageData {
 	var wordlist []string
 	var args []interface{}
 	for _, word := range words {
 		wordlist = append(wordlist, "word = ?")
 		args = append(args, strings.ToLower(word))
+	}
+
+	// the domains conditional defaults to just 'true' i.e. no domain condition
+	domains := []string{"1"}
+	if len(domain) > 0 && domain[0] != "" {
+		domains = make([]string, 0) // we've got at least one domain! clear domains default
+		for _, d := range domain {
+			domains = append(domains, "domain = ?")
+			args = append(args, d)
+		}
 	}
 
 	orderType := "SUM(score)"
@@ -206,12 +221,13 @@ func searchWords(db *sql.DB, words []string, searchByScore bool) []types.PageDat
 	query := fmt.Sprintf(`
     SELECT p.url, p.about, p.title 
     FROM inv_index inv INNER JOIN pages p ON inv.url = p.url 
-    WHERE %s
+    WHERE (%s)
+    AND (%s)
     GROUP BY inv.url 
     ORDER BY %s
     DESC
     LIMIT 15
-    `, strings.Join(wordlist, " OR "), orderType)
+    `, strings.Join(wordlist, " OR "), strings.Join(domains, " OR "), orderType)
 
 	stmt, err := db.Prepare(query)
 	util.Check(err)

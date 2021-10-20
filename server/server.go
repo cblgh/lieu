@@ -27,6 +27,7 @@ type TemplateView struct {
 type SearchData struct {
 	Query      string
 	Title      string
+	Site       string
 	Pages      []types.PageData
 	IsInternal bool
 }
@@ -60,10 +61,18 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 	var query string
 	view := &TemplateView{}
 
+	var domain string
 	if req.Method == http.MethodGet {
 		params := req.URL.Query()
 		if words, exists := params["q"]; exists && words[0] != "" {
 			query = words[0]
+		}
+
+		if parts, exists := params["site"]; exists && parts[0] != "" {
+			// make sure we only have the domain, and no protocol prefix
+			domain = strings.TrimPrefix(parts[0], "https://")
+			domain = strings.TrimPrefix(domain, "http://")
+			domain = strings.TrimSuffix(domain, "/")
 		}
 	}
 
@@ -73,7 +82,12 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	pages := database.SearchWordsByScore(h.db, util.Inflect(strings.Fields(query)))
+	var pages []types.PageData
+	if domain != "" {
+		pages = database.SearchWordsBySite(h.db, util.Inflect(strings.Fields(query)), domain)
+	} else {
+		pages = database.SearchWordsByScore(h.db, util.Inflect(strings.Fields(query)))
+	}
 
 	if useURLTitles {
 		for i, pageData := range pages {
@@ -87,6 +101,7 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 	view.Data = SearchData{
 		Title:      "Results",
 		Query:      query,
+		Site:       domain,
 		Pages:      pages,
 		IsInternal: true,
 	}
