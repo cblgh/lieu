@@ -68,6 +68,7 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 			query = words[0]
 		}
 
+		// how to use: https://gist.github.com/cblgh/29991ba0a9e65cccbe14f4afd7c975f1
 		if parts, exists := params["site"]; exists && parts[0] != "" {
 			// make sure we only have the domain, and no protocol prefix
 			domain = strings.TrimPrefix(parts[0], "https://")
