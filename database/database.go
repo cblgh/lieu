@@ -69,7 +69,7 @@ func createTables(db *sql.DB) {
         url TEXT NOT NULL,
         FOREIGN KEY(url) REFERENCES pages(url)
     )`,
-    `CREATE VIRTUAL TABLE IF NOT EXISTS external_links USING fts5 (url, tokenize="trigram")`,
+		`CREATE VIRTUAL TABLE IF NOT EXISTS external_links USING fts5 (url, tokenize="trigram")`,
 	}
 
 	for _, query := range queries {
@@ -110,16 +110,16 @@ func FulltextSearchWords(db *sql.DB, phrase string) []types.PageData {
 	util.Check(err)
 	defer rows.Close()
 
-  var pageData types.PageData
-  var pages []types.PageData
-  for rows.Next() {
-    if err := rows.Scan(&pageData.URL); err != nil {
-      log.Fatalln(err)
-    }
-    pageData.Title = pageData.URL
-    pages = append(pages, pageData)
-  }
-  return pages
+	var pageData types.PageData
+	var pages []types.PageData
+	for rows.Next() {
+		if err := rows.Scan(&pageData.URL); err != nil {
+			log.Fatalln(err)
+		}
+		pageData.Title = pageData.URL
+		pages = append(pages, pageData)
+	}
+	return pages
 }
 
 func GetDomainCount(db *sql.DB) int {

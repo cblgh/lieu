@@ -25,8 +25,10 @@ type TemplateView struct {
 }
 
 type SearchData struct {
-	Query string
-	Pages []types.PageData
+	Query      string
+	Title      string
+	Pages      []types.PageData
+	IsInternal bool
 }
 
 type IndexData struct {
@@ -83,8 +85,10 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 	}
 
 	view.Data = SearchData{
-		Query: query,
-		Pages: pages,
+		Title:      "Results",
+		Query:      query,
+		Pages:      pages,
+		IsInternal: true,
 	}
 	h.renderView(res, "search", view)
 }
@@ -112,8 +116,10 @@ func (h RequestHandler) externalSearchRoute(res http.ResponseWriter, req *http.R
 	}
 
 	view.Data = SearchData{
-		Query: query,
-		Pages: pages,
+		Title:      "External Results",
+		Query:      query,
+		Pages:      pages,
+		IsInternal: false,
 	}
 	h.renderView(res, "search", view)
 }
@@ -191,8 +197,8 @@ func Serve(config types.Config) {
 
 	http.HandleFunc("/about", handler.aboutRoute)
 	http.HandleFunc("/", handler.searchRoute)
-	http.HandleFunc("/external", handler.externalSearchRoute)
-	http.HandleFunc("/random/external", handler.randomExternalRoute)
+	http.HandleFunc("/outgoing", handler.externalSearchRoute)
+	http.HandleFunc("/random/outgoing", handler.randomExternalRoute)
 	http.HandleFunc("/random", handler.randomRoute)
 	http.HandleFunc("/webring", handler.webringRoute)
 	http.HandleFunc("/filtered", handler.filteredRoute)
