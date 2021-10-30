@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"regexp"
 	"strings"
 
 	"html/template"
@@ -57,6 +58,8 @@ var templates = template.Must(template.ParseFiles(
 
 const useURLTitles = true
 
+var sitePattern = regexp.MustCompile(`site:\S+`)
+
 func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) {
 	var query string
 	view := &TemplateView{}
@@ -74,6 +77,14 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 			domain = strings.TrimPrefix(parts[0], "https://")
 			domain = strings.TrimPrefix(domain, "http://")
 			domain = strings.TrimSuffix(domain, "/")
+		} else if sitePattern.MatchString(query) {
+			// if user searched with "site:<domain>" in text box, behave the same way as if a query param was used
+			domain = sitePattern.FindString(query)[5:]
+		}
+		// if clear button was used -> clear site param / search text
+		if parts, exists := params["clear"]; exists && parts[0] != "" {
+			domain = ""
+			query = sitePattern.ReplaceAllString(query, "")
 		}
 	}
 
