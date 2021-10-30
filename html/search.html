@@ -2,6 +2,7 @@
 {{ template "nav" . }}
 <main id="results" class="flow2">
     <h1>{{ .Data.Title }} {{ if ne .Data.Site "" }} for {{ .Data.Site }} {{ end }}</h1>
+
     <form method="GET" class="search">
         <label for="search">Search {{ .SiteName }} </label>
         <span class="search__input">
@@ -14,18 +15,29 @@
             </button>
         </span>
     </form>
-    <nav>
-        <ul class="result-nav-list">
-            <li title="content from webring sites only"
-                class="{{ if .Data.IsInternal }} result__current {{ end }}">
-                <a href="/?q={{ .Data.Query }}">Webring</a>
-            </li>
-            <li title="content linked from webring sites, but which reside outside it"
-                class="{{ if .Data.IsInternal | not }} result__current {{ end }}">
-                <a href="/outgoing?q={{ .Data.Query }}">Outgoing</a>
-            </li>
-        </ul>
-    </nav>
+    {{ if ne .Data.Site "" }} 
+     <!-- add a button to clear the search results if a site:<domain> param has been used -->
+        <form method="GET" class="search">
+            <span class="search__input">
+                <input type="hidden" minlength="1" required name="q" placeholder="Search" value="{{ .Data.Query }}" class="search-box" id="search">
+                <button type="submit" value="clear" name="clear">Clear</button>
+                </button>
+            </span>
+        </form>
+    {{ else }}
+        <nav>
+            <ul class="result-nav-list">
+                <li title="content from webring sites only"
+                    class="{{ if .Data.IsInternal }} result__current {{ end }}">
+                    <a href="/?q={{ .Data.Query }}">Webring</a>
+                </li>
+                <li title="content linked from webring sites, but which reside outside it"
+                    class="{{ if .Data.IsInternal | not }} result__current {{ end }}">
+                    <a href="/outgoing?q={{ .Data.Query }}">Outgoing</a>
+                </li>
+            </ul>
+        </nav>
+    {{ end }}
     <article>
         <ul role="list" class="flow2 two-columns width-126ch">
         {{ range $index, $a := .Data.Pages }}
