@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for os in windows linux darwin openbsd
+for os in linux darwin openbsd
 do
     executable="lieu"
     if [ $os = "windows" ]; then

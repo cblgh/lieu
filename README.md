@@ -42,6 +42,7 @@ for easy inspection of the data. You typically want to redirect their output to
 the files Lieu reads from, as defined in the config file. See below for a
 typical workflow.
 
+
 ### Workflow
 
 * Edit the config
@@ -108,6 +109,20 @@ The following config-defined files can stay as-is unless you have specific requi
 
 For a full rundown of the files and their various jobs, see the [files
 description](docs/files.md).
+
+## Developing
+Build a binary:
+```sh
+# this project has an experimental fulltext-search feature, so we need to include sqlite's fts engine (fts5)
+go build --tags fts5
+# or using go run
+go run --tags fts5 . 
+```
+
+Create new release binaries:
+```sh
+./release.sh
+```
 
 ### License
 
