@@ -2,12 +2,14 @@ package server
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"os"
 	"regexp"
 	"strings"
+	"syscall"
 
 	"html/template"
 	"lieu/database"
@@ -215,7 +217,11 @@ func (h RequestHandler) renderView(res http.ResponseWriter, tmpl string, view *T
 	} else {
 		errTemp = templates.ExecuteTemplate(res, tmpl+".html", view)
 	}
-	util.Check(errTemp)
+	if errors.Is(errTemp, syscall.EPIPE) {
+		fmt.Println("had a broken pipe, continuing")
+	} else {
+		util.Check(errTemp)
+	}
 }
 
 func Serve(config types.Config) {
