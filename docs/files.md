@@ -119,3 +119,12 @@ Also known as [stopwords](https://en.wikipedia.org/wiki/Stop_word)—words which
 are stopped from entering the search index. The default wordlist consists of the
 1000 or so most common English words, albeit curated slightly to still allow for
 interesting concepts and verbs—such as `reading` and `books`, for example.
+
+#### OpenSearch metadata
+If you are running your own instance of Lieu, you might want to look into changing the URL
+defined in the file `opensearch.xml`, which specifies [OpenSearch
+metadata](https://en.wikipedia.org/wiki/OpenSearch). This file allows a Lieu instance to be
+added to any browser supporting OpenSearch as one of the search engines that can be used for
+browser searches.
+
+See [html/assets/opensearch.xml](../html/assets/opensearch.xml).
