@@ -44,6 +44,12 @@ func createTables(db *sql.DB) {
     );
     `,
 		`
+    CREATE TABLE IF NOT EXISTS stats (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        last_crawl TEXT
+    );
+    `,
+		`
     CREATE TABLE IF NOT EXISTS pages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         url TEXT NOT NULL UNIQUE,
@@ -74,21 +80,19 @@ func createTables(db *sql.DB) {
 
 	for _, query := range queries {
 		if _, err := db.Exec(query); err != nil {
-			log.Fatalln(err)
+			log.Fatalln(fmt.Errorf("failed to execute %s (%w)", query, err))
 		}
 	}
 }
 
 /* TODO: filters
 lang:en|fr|en|<..>
-site:wiki.xxiivv.com, site:cblgh.org
 nosite:excluded-domain.com
 
 "word1 word2 word3" strict query
 
 query params:
 &order=score, &order=count
-&outgoing=true
 */
 
 func SearchWordsByScore(db *sql.DB, words []string) []types.PageData {
@@ -125,6 +129,29 @@ func FulltextSearchWords(db *sql.DB, phrase string) []types.PageData {
 		pages = append(pages, pageData)
 	}
 	return pages
+}
+
+func UpdateCrawlDate(db *sql.DB, date string) {
+	stmt := `INSERT OR IGNORE INTO stats(last_crawl) VALUES (?)`
+	_, err := db.Exec(stmt, date)
+	if err != nil {
+		util.Check(fmt.Errorf("failed to update crawl date (%w)", err))
+	}
+}
+
+func GetLastCrawl(db *sql.DB) string {
+	rows, err := db.Query("SELECT last_crawl FROM stats WHERE last_crawl IS NOT NULL ORDER BY id DESC LIMIT 1")
+	util.Check(err)
+	defer rows.Close()
+
+	var date string
+	for rows.Next() {
+		err = rows.Scan(&date)
+		if err != nil {
+			util.Check(fmt.Errorf("failed to get last crawl (%w)", err))
+		}
+	}
+	return date
 }
 
 func GetDomainCount(db *sql.DB) int {

@@ -48,6 +48,7 @@ type ListData struct {
 type AboutData struct {
 	DomainCount  int
 	WebringName  string
+	LastCrawl    string
 	PageCount    string
 	TermCount    string
 	FilteredLink string
@@ -159,12 +160,14 @@ func (h RequestHandler) aboutRoute(res http.ResponseWriter, req *http.Request) {
 	pageCount := util.Humanize(database.GetPageCount(h.db))
 	wordCount := util.Humanize(database.GetWordCount(h.db))
 	domainCount := database.GetDomainCount(h.db)
+	lastCrawl := database.GetLastCrawl(h.db)
 
 	view.Data = AboutData{
 		WebringName:  h.config.General.Name,
 		DomainCount:  domainCount,
 		PageCount:    pageCount,
 		TermCount:    wordCount,
+		LastCrawl:    lastCrawl,
 		FilteredLink: "/filtered",
 		RingLink:     h.config.General.URL,
 	}

@@ -12,6 +12,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/jinzhu/inflection"
 )
@@ -65,6 +66,8 @@ func Ingest(config types.Config) {
 	}
 
 	db := database.InitDB(config.Data.Database)
+	date := time.Now().Format("2006-01-02")
+	database.UpdateCrawlDate(db, date)
 
 	wordlist := util.ReadList(config.Data.Wordlist, "|")
 
