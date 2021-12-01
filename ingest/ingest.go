@@ -175,6 +175,7 @@ func Ingest(config types.Config) {
 			pages = make(map[string]types.PageData)
 		}
 	}
+	ingestBatch(db, batch, pages, externalLinks)
 	fmt.Printf("ingested %d words\n", count)
 
 	err = scanner.Err()
@@ -188,6 +189,7 @@ func ingestBatch(db *sql.DB, batch []types.SearchFragment, pageMap map[string]ty
 		pages[i] = pageMap[k]
 		i++
 	}
+	// TODO (2021-11-10): debug the "incomplete input" error / log, and find out where it is coming from
 	log.Println("starting to ingest batch")
 	database.InsertManyDomains(db, pages)
 	database.InsertManyPages(db, pages)

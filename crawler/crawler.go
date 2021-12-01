@@ -52,7 +52,6 @@ func getLink(target string) string {
 		target = strings.Split(target, "?")[0]
 	}
 	target = strings.TrimSpace(target)
-	target = strings.ToLower(target)
 	// remove trailing /
 	return strings.TrimSuffix(target, "/")
 }
@@ -203,6 +202,7 @@ func Crawl(config types.Config) {
 		q.AddURL(link)
 	}
 
+	c.UserAgent = "Lieu"
 	c.AllowedDomains = domains
 	c.AllowURLRevisit = false
 	c.DisallowedDomains = getBannedDomains(config.Crawler.BannedDomains)

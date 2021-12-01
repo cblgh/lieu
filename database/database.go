@@ -276,6 +276,9 @@ func searchWords(db *sql.DB, words []string, searchByScore bool, domain ...strin
 }
 
 func InsertManyDomains(db *sql.DB, pages []types.PageData) {
+	if len(pages) == 0 {
+		return
+	}
 	values := make([]string, 0, len(pages))
 	args := make([]interface{}, 0, len(pages))
 
@@ -292,6 +295,9 @@ func InsertManyDomains(db *sql.DB, pages []types.PageData) {
 }
 
 func InsertManyPages(db *sql.DB, pages []types.PageData) {
+	if len(pages) == 0 {
+		return
+	}
 	values := make([]string, 0, len(pages))
 	args := make([]interface{}, 0, len(pages))
 
@@ -309,6 +315,10 @@ func InsertManyPages(db *sql.DB, pages []types.PageData) {
 }
 
 func InsertManyWords(db *sql.DB, batch []types.SearchFragment) {
+	if len(batch) == 0 {
+		return
+	}
+
 	values := make([]string, 0, len(batch))
 	args := make([]interface{}, 0, len(batch))
 
@@ -324,6 +334,10 @@ func InsertManyWords(db *sql.DB, batch []types.SearchFragment) {
 }
 
 func InsertManyExternalLinks(db *sql.DB, externalLinks []string) {
+	if len(externalLinks) == 0 {
+		return
+	}
+
 	values := make([]string, 0, len(externalLinks))
 	args := make([]interface{}, 0, len(externalLinks))
 
