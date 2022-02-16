@@ -3,6 +3,7 @@
 :root {
     --primary: #fefefe;
     --secondary: #000;
+    --link: #fefefe;
     /* alt colorscheme: 1 */
     /* --primary: red; */
     /* --secondary: #fefefe; */
@@ -16,6 +17,11 @@ html {
     font-size: 62.5%;
 }
 
+body {
+    /* defaults for old browsers */
+    color: white; 
+    background: black;
+}
 
 body {
     font-family: "Inter UI", sans-serif;
@@ -26,9 +32,9 @@ body {
 
 a {
     cursor: pointer;
-    color: var(--primary);
+    color: var(--link);
     text-decoration: none;
-    border-bottom: 0.1rem solid var(--primary);
+    border-bottom: 0.1rem solid var(--link);
     word-wrap: break-word;
 }
 
@@ -59,8 +65,9 @@ input[type="search"] {
     border-radius: 0.16rem;
     padding: 0.8rem 0.8rem 0.8rem 1.2rem;
     border: 0;
-    color: var(--secondary);
-    background: var(--primary);
+    color: var(--primary);
+    background: var(--secondary);
+    border: var(--primary) solid 0.1rem;
     width: 100%;
     max-width: 30rem;
 }
@@ -154,6 +161,7 @@ nav li {
 
 .result__current {
     /* font-weight: bold; */
+    color: var(--link);
     text-decoration-line: underline;
 }
 
@@ -168,7 +176,7 @@ nav li {
 }
 
 .entry>*+* {
-    margin-top: 1.6rem;
+    margin-top: 0.8rem;
 }
 
 .entry__link {
@@ -177,7 +185,6 @@ nav li {
 
 .entry__text {
     color: var(--primary);
-    opacity: 0.55;
     line-height: 1.2;
 }
 
