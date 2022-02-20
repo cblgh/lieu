@@ -17,11 +17,17 @@ html {
     font-size: 62.5%;
 }
 
+/* defaults for old browsers */
 body {
-    /* defaults for old browsers */
     color: white; 
     background: black;
 }
+
+input[type="search"] {
+    color: black;
+    border: black solid 0.1rem;
+}
+/* end oldie defaults */
 
 body {
     font-family: "Inter UI", sans-serif;
