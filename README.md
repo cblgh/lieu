@@ -57,6 +57,10 @@ typical workflow.
 After ingesting the data with `lieu ingest`, you can also use lieu to search the
 corpus in the terminal with `lieu search`.
 
+## Theming
+
+Tweak the `theme` values of the config, specified below.
+
 ## Config
 
 The config file is written in [TOML](https://toml.io/en/).
@@ -67,6 +71,12 @@ name = "Merveilles Webring"
 # used by the precrawl command and linked to in /about route
 url = "https://webring.xxiivv.com"
 port = 10001
+
+[theme]
+# colors specified in hex (or valid css names) which determine the theme of the lieu instance
+foreground = "#ffffff"
+background = "#000000"
+links = "#ffffff"
 
 [data]
 # the source file should contain the crawl command's output 

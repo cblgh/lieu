@@ -21,6 +21,11 @@ type Config struct {
 		URL         string `json:url`
 		Port        int    `json:port`
 	} `json:general`
+	Theme struct {
+		Foreground string `json:"foreground"`
+		Background string `json:"background"`
+		Links      string `json:"links"`
+	} `json:"theme"`
 	Data struct {
 		Source     string `json:source`
 		Database   string `json:database`

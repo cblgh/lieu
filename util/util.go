@@ -105,6 +105,12 @@ name = "Sweet Webring"
 url = "https://example.com/"
 port = 10001
 
+[theme]
+# colors specified in hex (or valid css names) which determine the theme of the lieu instance
+foreground = "#ffffff"
+background = "#000000"
+links = "#ffffff"
+
 [data]
 # the source file should contain the crawl command's output 
 source = "data/crawled.txt"
