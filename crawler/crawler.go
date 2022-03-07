@@ -72,16 +72,23 @@ func getWebringLinks(path string) []string {
 	return links
 }
 
-func getDomains(links []string) []string {
+func getDomains(links []string) ([]string, []string) {
 	var domains []string
+	// sites which should have stricter crawling enforced (e.g. applicable for shared sites like tilde sites)
+	// pathsites are sites that are passed in which contain path,
+	// e.g. https://example.com/site/lupin -> only children pages of /site/lupin/ will be crawled
+	var pathsites []string
 	for _, l := range links {
 		u, err := url.Parse(l)
 		if err != nil {
 			continue
 		}
 		domains = append(domains, u.Hostname())
+		if len(u.Path) > 0 && (u.Path != "/" || u.Path != "index.html") {
+			pathsites = append(pathsites, l)
+		}
 	}
-	return domains
+	return domains, pathsites
 }
 
 func findSuffix(suffixes []string, query string) bool {
@@ -184,7 +191,7 @@ func Precrawl(config types.Config) {
 func Crawl(config types.Config) {
 	SUFFIXES := getBannedSuffixes(config.Crawler.BannedSuffixes)
 	links := getWebringLinks(config.Crawler.Webring)
-	domains := getDomains(links)
+	domains, pathsites := getDomains(links)
 	initialDomain := config.General.URL
 
 	// TODO: introduce c2 for scraping links (with depth 1) linked to from webring domains
@@ -219,12 +226,18 @@ func Crawl(config types.Config) {
 		if findSuffix(SUFFIXES, link) {
 			return
 		}
+
 		link = e.Request.AbsoluteURL(link)
 		u, err := url.Parse(link)
+		if err != nil {
+			return
+		}
+
+		outgoingDomain := u.Hostname()
+		currentDomain := e.Request.URL.Hostname()
+
 		// log which site links to what
-		if err == nil && !util.Contains(boringWords, link) && !util.Contains(boringDomains, link) {
-			outgoingDomain := u.Hostname()
-			currentDomain := e.Request.URL.Hostname()
+		if !util.Contains(boringWords, link) && !util.Contains(boringDomains, link) {
 			if !find(domains, outgoingDomain) {
 				fmt.Println("non-webring-link", link, e.Request.URL)
 				// solidarity! someone in the webring linked to someone else in it
@@ -232,8 +245,26 @@ func Crawl(config types.Config) {
 				fmt.Println("webring-link", link, e.Request.URL)
 			}
 		}
-		// only visits links from AllowedDomains
-		q.AddURL(link)
+
+		// rule-based crawling
+		var pathsite string
+		for _, s := range pathsites {
+			if strings.Contains(s, outgoingDomain) {
+				pathsite = s
+				break
+			}
+		}
+		// the visited site was a so called »pathsite», a site with restrictions on which pages can be crawled (most often due to
+		// existing on a shared domain)
+		if pathsite != "" {
+			// make sure we're only crawling descendents of the original path
+			if strings.HasPrefix(link, pathsite) {
+				q.AddURL(link)
+			}
+		} else {
+			// visits links from AllowedDomains
+			q.AddURL(link)
+		}
 	})
 
 	handleIndexing(c)

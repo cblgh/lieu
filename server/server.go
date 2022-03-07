@@ -229,10 +229,10 @@ func (h RequestHandler) renderView(res http.ResponseWriter, tmpl string, view *T
 
 func WriteTheme(config types.Config) {
 	theme := config.Theme
-  // no theme is set, use the default
-  if theme.Foreground == "" {
-    return
-  }
+	// no theme is set, use the default
+	if theme.Foreground == "" {
+		return
+	}
 	colors := fmt.Sprintf(`:root {
   --primary: %s;
   --secondary: %s;
