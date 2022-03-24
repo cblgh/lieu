@@ -20,6 +20,8 @@ type Config struct {
 		Placeholder string `json:placeholder`
 		URL         string `json:url`
 		Port        int    `json:port`
+		Proxy       string `json:proxy`
+		NoWebRing   bool   `json:nowebring`
 	} `json:general`
 	Theme struct {
 		Foreground string `json:"foreground"`

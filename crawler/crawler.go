@@ -153,7 +153,29 @@ func collectHeadingText(heading string, e *colly.HTMLElement) {
 	}
 }
 
+func SetupDefaultProxy(config types.Config) error {
+	proxyURL, err := url.Parse(config.General.Proxy)
+	if err != nil {
+		return err
+	}
+
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyURL(proxyURL),
+		},
+	}
+
+	//colly.SetHTTPClient(httpClient)
+	http.DefaultClient = httpClient
+	return nil
+}
+
 func Precrawl(config types.Config) {
+	// setup proxy
+	err := SetupDefaultProxy(config)
+	if err != nil {
+		log.Fatal(err)
+	}
 	res, err := http.Get(config.General.URL)
 	util.Check(err)
 	defer res.Body.Close()
@@ -166,11 +188,23 @@ func Precrawl(config types.Config) {
 	util.Check(err)
 
 	items := make([]string, 0)
-	doc.Find("li").Each(func(i int, s *goquery.Selection) {
-		if domain, exists := s.Find("a").Attr("href"); exists {
-			items = append(items, domain)
-		}
-	})
+	switch config.General.NoWebRing {
+	case true:
+		doc.Find("li").Each(func(i int, s *goquery.Selection) {
+			if domain, exists := s.Find("a").Attr("href"); exists {
+				items = append(items, domain)
+			}
+		})
+	default:
+		doc.Find("a").Each(func(i int, s *goquery.Selection) {
+			if domain, exists := s.Attr("href"); exists {
+				items = append(items, domain)
+			}
+		})
+	}
+
+	// remove duplicates
+	items = util.DeduplicateSlice(items)
 
 	BANNED := getBannedDomains(config.Crawler.BannedDomains)
 	for _, item := range items {
@@ -189,6 +223,11 @@ func Precrawl(config types.Config) {
 }
 
 func Crawl(config types.Config) {
+	// setup proxy
+	err := SetupDefaultProxy(config)
+	if err != nil {
+		log.Fatal(err)
+	}
 	SUFFIXES := getBannedSuffixes(config.Crawler.BannedSuffixes)
 	links := getWebringLinks(config.Crawler.Webring)
 	domains, pathsites := getDomains(links)
@@ -199,6 +238,7 @@ func Crawl(config types.Config) {
 	c := colly.NewCollector(
 		colly.MaxDepth(3),
 	)
+	c.SetProxy(config.General.Proxy)
 
 	q, _ := queue.New(
 		5, /* threads */
