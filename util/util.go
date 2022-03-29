@@ -10,9 +10,10 @@ import (
 	"os"
 	"strings"
 
+	"lieu/types"
+
 	"github.com/jinzhu/inflection"
 	"github.com/komkom/toml"
-	"lieu/types"
 )
 
 func Inflect(words []string) []string {
@@ -139,4 +140,16 @@ boringDomains = "data/boring-domains.txt"
 
 func Exit() {
 	os.Exit(0)
+}
+
+func DeduplicateSlice(intSlice []string) []string {
+	keys := make(map[string]bool)
+	list := []string{}
+	for _, entry := range intSlice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
 }

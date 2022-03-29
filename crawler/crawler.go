@@ -153,7 +153,29 @@ func collectHeadingText(heading string, e *colly.HTMLElement) {
 	}
 }
 
+func SetupDefaultProxy(config types.Config) error {
+	proxyURL, err := url.Parse(config.General.Proxy)
+	if err != nil {
+		return err
+	}
+
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyURL(proxyURL),
+		},
+	}
+
+	//colly.SetHTTPClient(httpClient)
+	http.DefaultClient = httpClient
+	return nil
+}
+
 func Precrawl(config types.Config) {
+	// setup proxy
+	err := SetupDefaultProxy(config)
+	if err != nil {
+		log.Fatal(err)
+	}
 	res, err := http.Get(config.General.URL)
 	util.Check(err)
 	defer res.Body.Close()
@@ -189,6 +211,11 @@ func Precrawl(config types.Config) {
 }
 
 func Crawl(config types.Config) {
+	// setup proxy
+	err := SetupDefaultProxy(config)
+	if err != nil {
+		log.Fatal(err)
+	}
 	SUFFIXES := getBannedSuffixes(config.Crawler.BannedSuffixes)
 	links := getWebringLinks(config.Crawler.Webring)
 	domains, pathsites := getDomains(links)
@@ -199,6 +226,7 @@ func Crawl(config types.Config) {
 	c := colly.NewCollector(
 		colly.MaxDepth(3),
 	)
+	c.SetProxy(config.General.Proxy)
 
 	q, _ := queue.New(
 		5, /* threads */
