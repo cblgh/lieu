@@ -188,22 +188,11 @@ func Precrawl(config types.Config) {
 	util.Check(err)
 
 	items := make([]string, 0)
-	switch config.General.NoWebRing {
-	case true:
-		doc.Find("a").Each(func(i int, s *goquery.Selection) {
-			if domain, exists := s.Attr("href"); exists {
-				items = append(items, domain)
-			}
-		})
-		// remove duplicates
-		items = util.DeduplicateSlice(items)
-	default:
-		doc.Find("li").Each(func(i int, s *goquery.Selection) {
-			if domain, exists := s.Find("a").Attr("href"); exists {
-				items = append(items, domain)
-			}
-		})
-	}
+	doc.Find("li").Each(func(i int, s *goquery.Selection) {
+		if domain, exists := s.Find("a").Attr("href"); exists {
+			items = append(items, domain)
+		}
+	})
 
 	BANNED := getBannedDomains(config.Crawler.BannedDomains)
 	for _, item := range items {
