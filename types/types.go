@@ -15,12 +15,13 @@ type PageData struct {
 
 type Config struct {
 	General struct {
-		Name        string `json:name`
-		Tagline     string `json:tagline`
-		Placeholder string `json:placeholder`
-		URL         string `json:url`
-		Port        int    `json:port`
-		Proxy       string `json:proxy`
+		Name            string `json:name`
+		Tagline         string `json:tagline`
+		Placeholder     string `json:placeholder`
+		URL             string `json:url`
+		WebringSelector string `json:"webringSelector"`
+		Port            int    `json:port`
+		Proxy           string `json:proxy`
 	} `json:general`
 	Theme struct {
 		Foreground string `json:"foreground"`

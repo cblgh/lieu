@@ -70,6 +70,9 @@ The config file is written in [TOML](https://toml.io/en/).
 name = "Merveilles Webring"
 # used by the precrawl command and linked to in /about route
 url = "https://webring.xxiivv.com"
+# used by the precrawl command to populate the Crawler.Webring file;
+# takes simple html selectors. might be a bit wonky :)
+webringSelector = "li > a[href]:first-of-type"
 port = 10001
 
 [theme]

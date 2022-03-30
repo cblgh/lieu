@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
 	"log"
 	"net"
 	"os"
+	"regexp"
 	"strings"
 
 	"lieu/types"
@@ -28,6 +30,66 @@ func Check(err error) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+// document.querySelectorAll-type functionality. limited functionality as of now (no classes or id support atm, i think!!)
+func QuerySelector(query string, current *goquery.Selection, results *[]string) {
+	var op, operand string
+
+	attrPattern := regexp.MustCompile(`(\w+)\[(\w+)\](.+)?`)
+	attrValuePattern := regexp.MustCompile(`\[(\w+)\]`)
+
+	if len(query) == 0 {
+		return
+	}
+
+	fields := strings.Fields(query)
+	part := fields[0]
+	query = strings.Join(fields[1:], " ")
+	if part == ">" {
+		op = "subchild"
+	} else if attrPattern.MatchString(part) {
+		op = "element"
+		matches := attrPattern.FindStringSubmatch(part)
+		operand = matches[1]
+		var optional string
+		if len(matches) == 4 {
+			optional = matches[3]
+		}
+		query = strings.TrimSpace(fmt.Sprintf("[%s]%s %s", matches[2], optional, query))
+	} else if attrValuePattern.MatchString(part) {
+		op = "attr"
+		operand = attrValuePattern.FindStringSubmatch(part)[1]
+	} else if len(query) == 0 {
+		op = "final"
+	} else {
+		op = "element"
+		operand = part
+	}
+
+	switch op {
+	case "element": // e.g. [el]; bla > [el]; but also [el] > bla
+		current = current.Find(operand)
+		if strings.HasSuffix(query, "first-of-type") {
+			break
+		}
+		fallthrough
+	case "subchild": // [preceding] > [future]
+		// recurse querySelector on all [preceding] element types
+		current.Each(func(j int, s *goquery.Selection) {
+			QuerySelector(query, s, results)
+		})
+		return
+	case "attr": // x[attr]
+		// extract the attribute
+		if str, exists := current.Attr(operand); exists {
+			*results = append(*results, str)
+		}
+		return
+	case "final": // no more in query, and we did not end on an attr: get text
+		*results = append(*results, current.Text())
+	}
+	QuerySelector(query, current, results)
 }
 
 func DatabaseDoesNotExist(filepath string) {
@@ -104,6 +166,7 @@ func WriteMockConfig() {
 name = "Sweet Webring"
 # used by the precrawl command and linked to in /about route
 url = "https://example.com/"
+webringSelector = "li > a"
 port = 10001
 
 [theme]

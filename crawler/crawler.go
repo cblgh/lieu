@@ -154,6 +154,10 @@ func collectHeadingText(heading string, e *colly.HTMLElement) {
 }
 
 func SetupDefaultProxy(config types.Config) error {
+	// no proxy configured, go back
+	if config.General.Proxy == "" {
+		return nil
+	}
 	proxyURL, err := url.Parse(config.General.Proxy)
 	if err != nil {
 		return err
@@ -165,7 +169,6 @@ func SetupDefaultProxy(config types.Config) error {
 		},
 	}
 
-	//colly.SetHTTPClient(httpClient)
 	http.DefaultClient = httpClient
 	return nil
 }
@@ -176,6 +179,7 @@ func Precrawl(config types.Config) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	res, err := http.Get(config.General.URL)
 	util.Check(err)
 	defer res.Body.Close()
@@ -188,11 +192,12 @@ func Precrawl(config types.Config) {
 	util.Check(err)
 
 	items := make([]string, 0)
-	doc.Find("li").Each(func(i int, s *goquery.Selection) {
-		if domain, exists := s.Find("a").Attr("href"); exists {
-			items = append(items, domain)
-		}
-	})
+	s := doc.Find("html")
+	query := config.General.WebringSelector
+	if query == "" {
+    query = "li > a[href]:first-of-type"
+	}
+	util.QuerySelector(query, s, &items)
 
 	BANNED := getBannedDomains(config.Crawler.BannedDomains)
 	for _, item := range items {
@@ -226,7 +231,9 @@ func Crawl(config types.Config) {
 	c := colly.NewCollector(
 		colly.MaxDepth(3),
 	)
-	c.SetProxy(config.General.Proxy)
+	if config.General.Proxy != "" {
+		c.SetProxy(config.General.Proxy)
+	}
 
 	q, _ := queue.New(
 		5, /* threads */
