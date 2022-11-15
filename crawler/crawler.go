@@ -34,6 +34,15 @@ func getBoringDomains(path string) []string {
 	return util.ReadList(path, "\n")
 }
 
+func getPreviewQueries(path string) []string {
+	previewQueries := util.ReadList(path, "\n")
+	if len(previewQueries) > 0 {
+		return previewQueries;
+	} else {
+		return []string{"main p", "article p", "section p", "p"};
+	}
+}
+
 func find(list []string, query string) bool {
 	for _, item := range list {
 		if item == query {
@@ -104,12 +113,12 @@ func cleanText(s string) string {
 	s = strings.TrimSpace(s)
 	s = strings.ReplaceAll(s, "\n", " ")
 	s = strings.ReplaceAll(s, "|", " ")
-	whitespace := regexp.MustCompile(`\p{Z}`)
+	whitespace := regexp.MustCompile(`\p{Z}+`)
 	s = whitespace.ReplaceAllString(s, " ")
 	return s
 }
 
-func handleIndexing(c *colly.Collector) {
+func handleIndexing(c *colly.Collector, previewQueries []string) {
 	c.OnHTML("meta[name=\"keywords\"]", func(e *colly.HTMLElement) {
 		fmt.Println("keywords", cleanText(e.Attr("content")), e.Request.URL)
 	})
@@ -134,9 +143,12 @@ func handleIndexing(c *colly.Collector) {
 	})
 
 	c.OnHTML("body", func(e *colly.HTMLElement) {
-		paragraph := cleanText(e.DOM.Find("p").First().Text())
-		if len(paragraph) < 1500 && len(paragraph) > 0 {
-			fmt.Println("para", paragraph, e.Request.URL)
+		for i := 0; i < len(previewQueries); i++ {
+			paragraph := cleanText(e.DOM.Find(previewQueries[i]).First().Text())
+			if len(paragraph) < 1500 && len(paragraph) > 0 {
+				fmt.Println("para", paragraph, e.Request.URL)
+				break
+			}
 		}
 		// get all relevant page headings
 		collectHeadingText("h1", e)
@@ -254,6 +266,7 @@ func Crawl(config types.Config) {
 
 	boringDomains := getBoringDomains(config.Crawler.BoringDomains)
 	boringWords := getBoringWords(config.Crawler.BoringWords)
+	previewQueries := getPreviewQueries(config.Crawler.PreviewQueries)
 
 	// on every a element which has an href attribute, call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
@@ -302,7 +315,7 @@ func Crawl(config types.Config) {
 		}
 	})
 
-	handleIndexing(c)
+	handleIndexing(c, previewQueries)
 
 	// start scraping
 	q.Run(c)
