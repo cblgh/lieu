@@ -29,10 +29,10 @@ type Config struct {
 		Links      string `json:"links"`
 	} `json:"theme"`
 	Data struct {
-		Source     string `json:source`
-		Database   string `json:database`
-		Heuristics string `json:heuristics`
-		Wordlist   string `json:wordlist`
+		Source         string `json:source`
+		Database       string `json:database`
+		Heuristics     string `json:heuristics`
+		Wordlist       string `json:wordlist`
 	} `json:data`
 	Crawler struct {
 		Webring        string `json:webring`
@@ -40,5 +40,6 @@ type Config struct {
 		BannedSuffixes string `json:bannedSuffixes`
 		BoringWords    string `json:boringWords`
 		BoringDomains  string `json:boringDomains`
+		PreviewQueries string `json:"previewQueryList"`
 	} `json:crawler`
 }
