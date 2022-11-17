@@ -1,0 +1,9 @@
+header p.p-summary
+main p.p-summary
+main p:not(.post-meta):not(.alternate):not(header p):not(footer p):not(nav p):not(aside p):not(.sidebar p)
+article p.p-summary
+article p:not(.post-meta):not(.alternate):not(header p):not(footer p):not(nav p):not(aside p):not(.sidebar p)
+p:not(.post-meta):not(.alternate):not(header p):not(footer p):not(nav p):not(aside p):not(.sidebar p)
+header ~ p:not(.post-meta):not(.alternate):not(footer p):not(aside p):not(.sidebar p)
+h1 ~ p:not(.post-meta):not(.alternate)
+p:not(.post-meta):not(.alternate):not(footer p):not(aside p):not(.sidebar p)
