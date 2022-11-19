@@ -200,10 +200,14 @@ func ingestBatch(db *sql.DB, batch []types.SearchFragment, pageMap map[string]ty
 		i++
 	}
 	// TODO (2021-11-10): debug the "incomplete input" error / log, and find out where it is coming from
-	log.Println("starting to ingest batch")
+	log.Println("starting to ingest batch (Pages:", len(pages), "Words:", len(batch), "Links:", len(links),")")
 	database.InsertManyDomains(db, pages)
 	database.InsertManyPages(db, pages)
-	database.InsertManyWords(db, batch)
+	for i := 0; i < len(batch); i += 3000 {
+		end_i := i + 3000
+		if (end_i > len(batch)) { end_i = len(batch)}
+		database.InsertManyWords(db, batch[i:end_i])
+	}
 	database.InsertManyExternalLinks(db, links)
 	log.Println("finished ingesting batch")
 }
