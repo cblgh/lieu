@@ -117,6 +117,7 @@ func Ingest(config types.Config) {
 		case "title":
 			if len(page.About) == 0 {
 				page.About = rawdata
+				page.AboutSource = token
 			}
 			score = 5
 			page.Title = rawdata
@@ -124,6 +125,7 @@ func Ingest(config types.Config) {
 		case "h1":
 			if len(page.About) == 0 {
 				page.About = rawdata
+				page.AboutSource = token
 			}
 			fallthrough
 		case "h2":
@@ -132,13 +134,21 @@ func Ingest(config types.Config) {
 			score = 15
 			processed = partitionSentence(payload)
 		case "desc":
-			if len(page.About) < 30 && len(rawdata) < 100 {
+			if len(page.About) < 30 && len(rawdata) < 100 && len(rawdata) > len(page.About) {
 				page.About = rawdata
+				page.AboutSource = token
 			}
 			processed = partitionSentence(payload)
+		case "og-desc":
+			page.About = rawdata
+			page.AboutSource = token
+			processed = partitionSentence(payload)
 		case "para":
-			if performAboutHeuristic(config.Data.Heuristics, payload) {
-				page.About = rawdata
+			if (page.AboutSource != "og-desc" || len(rawdata)*10 > len(page.About)*7) {
+				if performAboutHeuristic(config.Data.Heuristics, payload) {
+					page.About = rawdata
+					page.AboutSource = token
+				}
 			}
 			processed = partitionSentence(payload)
 		case "lang":

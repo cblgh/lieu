@@ -34,6 +34,10 @@ func getBoringDomains(path string) []string {
 	return util.ReadList(path, "\n")
 }
 
+func getAboutHeuristics(path string) []string {
+	return util.ReadList(path, "\n")
+}
+
 func getPreviewQueries(path string) []string {
 	previewQueries := util.ReadList(path, "\n")
 	if len(previewQueries) > 0 {
@@ -112,27 +116,33 @@ func findSuffix(suffixes []string, query string) bool {
 func cleanText(s string) string {
 	s = strings.TrimSpace(s)
 	s = strings.ReplaceAll(s, "\n", " ")
-	s = strings.ReplaceAll(s, "|", " ")
 	whitespace := regexp.MustCompile(`\p{Z}+`)
 	s = whitespace.ReplaceAllString(s, " ")
 	return s
 }
 
-func handleIndexing(c *colly.Collector, previewQueries []string) {
+func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []string) {
 	c.OnHTML("meta[name=\"keywords\"]", func(e *colly.HTMLElement) {
 		fmt.Println("keywords", cleanText(e.Attr("content")), e.Request.URL)
 	})
 
 	c.OnHTML("meta[name=\"description\"]", func(e *colly.HTMLElement) {
 		desc := cleanText(e.Attr("content"))
-		if len(desc) > 0 {
+		if len(desc) > 0 && len(desc) < 1500 {
 			fmt.Println("desc", desc, e.Request.URL)
+		}
+	})
+
+	c.OnHTML("meta[property=\"og:description\"]", func(e *colly.HTMLElement) {
+		ogDesc := cleanText(e.Attr("content"))
+		if len(ogDesc) > 0 && len(ogDesc) < 1500 {
+			fmt.Println("og-desc", ogDesc, e.Request.URL)
 		}
 	})
 
 	c.OnHTML("html[lang]", func(e *colly.HTMLElement) {
 		lang := cleanText(e.Attr("lang"))
-		if len(lang) > 0 {
+		if len(lang) > 0 && len(lang) < 100 {
 			fmt.Println("lang", lang, e.Request.URL)
 		}
 	})
@@ -143,13 +153,26 @@ func handleIndexing(c *colly.Collector, previewQueries []string) {
 	})
 
 	c.OnHTML("body", func(e *colly.HTMLElement) {
+		QueryLoop:
 		for i := 0; i < len(previewQueries); i++ {
-			paragraph := cleanText(e.DOM.Find(previewQueries[i]).First().Text())
-			if len(paragraph) < 1500 && len(paragraph) > 0 {
-				fmt.Println("para", paragraph, e.Request.URL)
-				break
+			// After the fourth paragraph we're probably too far in to get something interesting for a preview
+			elements := e.DOM.Find(previewQueries[i])
+			for j := 0; j < 4 && j < elements.Length() ; j++ {
+				element_text := elements.Slice(j,j+1).Text()
+				paragraph := cleanText(element_text)
+				if len(paragraph) < 1500 && len(paragraph) > 20 {
+					if !util.Contains(heuristics, strings.ToLower(paragraph)) {
+						fmt.Println("para", paragraph, e.Request.URL)
+						break QueryLoop
+					}
+				}
 			}
 		}
+		paragraph := cleanText(e.DOM.Find("p").First().Text())
+		if len(paragraph) < 1500 && len(paragraph) > 0 {
+			fmt.Println("para-just-p", paragraph, e.Request.URL)
+		}
+	
 		// get all relevant page headings
 		collectHeadingText("h1", e)
 		collectHeadingText("h2", e)
@@ -267,6 +290,7 @@ func Crawl(config types.Config) {
 	boringDomains := getBoringDomains(config.Crawler.BoringDomains)
 	boringWords := getBoringWords(config.Crawler.BoringWords)
 	previewQueries := getPreviewQueries(config.Crawler.PreviewQueries)
+	heuristics := getAboutHeuristics(config.Data.Heuristics)
 
 	// on every a element which has an href attribute, call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
@@ -315,7 +339,7 @@ func Crawl(config types.Config) {
 		}
 	})
 
-	handleIndexing(c, previewQueries)
+	handleIndexing(c, previewQueries, heuristics)
 
 	// start scraping
 	q.Run(c)

@@ -11,6 +11,7 @@ type PageData struct {
 	Title string
 	About string
 	Lang  string
+	AboutSource string
 }
 
 type Config struct {
