@@ -294,6 +294,11 @@ func Crawl(config types.Config) {
 
 	// on every a element which has an href attribute, call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+
+		if e.Response.StatusCode >= 400 || e.Response.StatusCode <= 100 {
+			return
+		}
+		
 		link := getLink(e.Attr("href"))
 		if findSuffix(SUFFIXES, link) {
 			return
