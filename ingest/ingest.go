@@ -95,7 +95,7 @@ func Ingest(config types.Config) {
 			continue
 		}
 
-		pageurl := strings.ToLower(strings.TrimSuffix(strings.TrimSpace(line[lastSpace:len(line)]), "/"))
+		pageurl := strings.TrimSuffix(strings.TrimSpace(line[lastSpace:len(line)]), "/")
 		if !strings.HasPrefix(pageurl, "http") {
 			continue
 		}
@@ -156,7 +156,7 @@ func Ingest(config types.Config) {
 		case "keywords":
 			processed = strings.Split(strings.ReplaceAll(payload, ", ", ","), ",")
 		case "non-webring-link":
-			externalLinks = append(externalLinks, payload)
+			externalLinks = append(externalLinks, rawdata)
 		default:
 			continue
 		}
@@ -172,7 +172,7 @@ func Ingest(config types.Config) {
 			// only extract path segments once per url.
 			// we do it here because every page is virtually guaranteed to have a title attr &
 			// it only appears once
-			for _, word := range extractPathSegments(pageurl) {
+			for _, word := range extractPathSegments(strings.ToLower(pageurl)) {
 				batch = append(batch, types.SearchFragment{Word: word, URL: pageurl, Score: 2})
 			}
 		}
