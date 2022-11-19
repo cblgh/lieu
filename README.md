@@ -102,6 +102,8 @@ bannedSuffixes = "data/banned-suffixes.txt"
 boringWords = "data/boring-words.txt"
 # domains that won't be output as outgoing links
 boringDomains = "data/boring-domains.txt"
+# queries to search for finding preview text
+previewQueryList = "data/preview-query-list.txt"
 ```
 
 For your own use, the following config fields should be customized:
@@ -119,6 +121,7 @@ The following config-defined files can stay as-is unless you have specific requi
 * `heuristics`
 * `wordlist`
 * `bannedSuffixes`
+* `previewQueryList`
 
 For a full rundown of the files and their various jobs, see the [files
 description](docs/files.md).
