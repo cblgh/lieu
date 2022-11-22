@@ -7,10 +7,10 @@ type SearchFragment struct {
 }
 
 type PageData struct {
-	URL   string
-	Title string
-	About string
-	Lang  string
+	URL         string
+	Title       string
+	About       string
+	Lang        string
 	AboutSource string
 }
 
@@ -30,10 +30,10 @@ type Config struct {
 		Links      string `json:"links"`
 	} `json:"theme"`
 	Data struct {
-		Source         string `json:source`
-		Database       string `json:database`
-		Heuristics     string `json:heuristics`
-		Wordlist       string `json:wordlist`
+		Source     string `json:source`
+		Database   string `json:database`
+		Heuristics string `json:heuristics`
+		Wordlist   string `json:wordlist`
 	} `json:data`
 	Crawler struct {
 		Webring        string `json:webring`

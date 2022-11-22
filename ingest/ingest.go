@@ -144,7 +144,7 @@ func Ingest(config types.Config) {
 			page.AboutSource = token
 			processed = partitionSentence(payload)
 		case "para":
-			if (page.AboutSource != "og-desc" || len(rawdata)*10 > len(page.About)*7) {
+			if page.AboutSource != "og-desc" || len(rawdata)*10 > len(page.About)*7 {
 				if performAboutHeuristic(config.Data.Heuristics, payload) {
 					page.About = rawdata
 					page.AboutSource = token
@@ -200,12 +200,14 @@ func ingestBatch(db *sql.DB, batch []types.SearchFragment, pageMap map[string]ty
 		i++
 	}
 	// TODO (2021-11-10): debug the "incomplete input" error / log, and find out where it is coming from
-	log.Println("starting to ingest batch (Pages:", len(pages), "Words:", len(batch), "Links:", len(links),")")
+	log.Println("starting to ingest batch (Pages:", len(pages), "Words:", len(batch), "Links:", len(links), ")")
 	database.InsertManyDomains(db, pages)
 	database.InsertManyPages(db, pages)
 	for i := 0; i < len(batch); i += 3000 {
 		end_i := i + 3000
-		if (end_i > len(batch)) { end_i = len(batch)}
+		if end_i > len(batch) {
+			end_i = len(batch)
+		}
 		database.InsertManyWords(db, batch[i:end_i])
 	}
 	database.InsertManyExternalLinks(db, links)

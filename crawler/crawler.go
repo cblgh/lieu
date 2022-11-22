@@ -153,12 +153,12 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 	})
 
 	c.OnHTML("body", func(e *colly.HTMLElement) {
-		QueryLoop:
+	QueryLoop:
 		for i := 0; i < len(previewQueries); i++ {
 			// After the fourth paragraph we're probably too far in to get something interesting for a preview
 			elements := e.DOM.Find(previewQueries[i])
-			for j := 0; j < 4 && j < elements.Length() ; j++ {
-				element_text := elements.Slice(j,j+1).Text()
+			for j := 0; j < 4 && j < elements.Length(); j++ {
+				element_text := elements.Slice(j, j+1).Text()
 				paragraph := cleanText(element_text)
 				if len(paragraph) < 1500 && len(paragraph) > 20 {
 					if !util.Contains(heuristics, strings.ToLower(paragraph)) {
@@ -172,7 +172,7 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 		if len(paragraph) < 1500 && len(paragraph) > 0 {
 			fmt.Println("para-just-p", paragraph, e.Request.URL)
 		}
-	
+
 		// get all relevant page headings
 		collectHeadingText("h1", e)
 		collectHeadingText("h2", e)
@@ -230,7 +230,7 @@ func Precrawl(config types.Config) {
 	s := doc.Find("html")
 	query := config.General.WebringSelector
 	if query == "" {
-    query = "li > a[href]:first-of-type"
+		query = "li > a[href]:first-of-type"
 	}
 	util.QuerySelector(query, s, &items)
 
@@ -298,7 +298,7 @@ func Crawl(config types.Config) {
 		if e.Response.StatusCode >= 400 || e.Response.StatusCode <= 100 {
 			return
 		}
-		
+
 		link := getLink(e.Attr("href"))
 		if findSuffix(SUFFIXES, link) {
 			return
