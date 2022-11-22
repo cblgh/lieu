@@ -41,9 +41,9 @@ func getAboutHeuristics(path string) []string {
 func getPreviewQueries(path string) []string {
 	previewQueries := util.ReadList(path, "\n")
 	if len(previewQueries) > 0 {
-		return previewQueries;
+		return previewQueries
 	} else {
-		return []string{"main p", "article p", "section p", "p"};
+		return []string{"main p", "article p", "section p", "p"}
 	}
 }
 

@@ -196,6 +196,8 @@ bannedSuffixes = "data/banned-suffixes.txt"
 boringWords = "data/boring-words.txt"
 # domains that won't be output as outgoing links
 boringDomains = "data/boring-domains.txt"
+# queries to search for finding preview text
+previewQueryList = "data/preview-query-list.txt"
 `)
 	err := ioutil.WriteFile("lieu.toml", conf, 0644)
 	Check(err)

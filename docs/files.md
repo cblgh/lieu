@@ -123,21 +123,19 @@ are stopped from entering the search index. The default wordlist consists of the
 interesting concepts and verbs—such as `reading` and `books`, for example.
 
 #### `previewQueryList`
-A list of css selectors (one per line) to fetch preview paragraphs,
-the first paragraph found that passes a check against the `heuristics` file makes
-it into the search index. For each selector lieu tries the first four paragraphs
-found with each selector before skipping to the next one.
+A list of css selectors—one per line—used to fetch preview paragraphs. The first paragraph
+found passing a check against the `heuristics` file makes it into the search index. For
+each selector in `previewQueryList`, Lieu tries the first four paragraphs—as found by the
+selector—before trying to find a new set of paragraphs using the file's next selector.
 
-To get good results one usually wants to tune this to getting the first "real" paragraph
-after the header, or a summary paragraph if provided. It is also worth trying to avoind getting
-irelevant paragraphs as they clutter up your index and results, lieu will fall back to other
-preview sources.
+To get good results, one usually wants to tune this list to getting the first "real" paragraph
+after common page headers, or finding a summary paragraph. The default has been, at the time of
+writing, tuned for use with the [Fediring](https://fediring.net).
 
-The default has been (at the time of writing) tuned for use with the Fediring.
-
-Depending on how well the websites you are indexing are with semantic HTML this will
-get you the 70 to 90% solution. For the rest use heuristics and contact the creators of the
-websites you are tring to index, they (usually) appreciate the feedback.
+Depending on the structure of the websites you are indexing, this will get you 70-90% of the
+way in terms of accurate link descriptions. For the rest of the way, fine-tune `heuristics.txt`
+and reach out the creators of the websites you are indexing; they often appreciate the
+feedback.
 
 #### OpenSearch metadata
 If you are running your own instance of Lieu, you might want to look into changing the URL
