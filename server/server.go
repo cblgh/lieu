@@ -70,7 +70,7 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 	var langs = []string{}
 	var queryFields = []string{}
 		
-	if req.Method == http.MethodGet {
+	if req.Method == http.MethodGet{
 		params := req.URL.Query()
 		if words, exists := params["q"]; exists && words[0] != "" {
 			query = words[0]
@@ -86,24 +86,27 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 			domains = append(domains, domain)
 		}
 
-		var newQueryFields []string;
-		for _, word := range queryFields {
-			// This could be more efficient by splitting arrays, but I'm going with the more readable version for now
-			if strings.HasPrefix(word, "site:") {
-				domains = append(domains, strings.TrimPrefix(word, "site:"))
-			} else if strings.HasPrefix(word, "-site:") {
-				nodomains = append(nodomains, strings.TrimPrefix(word, "-site:"))
-			} else if strings.HasPrefix(word, "lang:") {
-				langs = append(langs, strings.TrimPrefix(word, "lang:"))
-			} else {
-				newQueryFields = append(newQueryFields, word)
+		// don't process if there are too many fields
+		if len(queryFields) <= 100 {
+			var newQueryFields []string;
+			for _, word := range queryFields {
+				// This could be more efficient by splitting arrays, but I'm going with the more readable version for now
+				if strings.HasPrefix(word, "site:") {
+					domains = append(domains, strings.TrimPrefix(word, "site:"))
+				} else if strings.HasPrefix(word, "-site:") {
+					nodomains = append(nodomains, strings.TrimPrefix(word, "-site:"))
+				} else if strings.HasPrefix(word, "lang:") {
+					langs = append(langs, strings.TrimPrefix(word, "lang:"))
+				} else {
+					newQueryFields = append(newQueryFields, word)
+				}
 			}
+			queryFields = newQueryFields;
 		}
-		queryFields = newQueryFields;
 		
 	}
 
-	if len(queryFields) == 0 {
+	if len(queryFields) == 0 || len(queryFields) > 100 || len(query) >= 8192 {
 		view.Data = IndexData{Tagline: h.config.General.Tagline, Placeholder: h.config.General.Placeholder}
 		h.renderView(res, "index", view)
 		return
