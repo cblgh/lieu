@@ -87,7 +87,6 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 		}
 
 		var newQueryFields []string;
-		fmt.Println("Query Fields:", queryFields)
 		for _, word := range queryFields {
 			// This could be more efficient by splitting arrays, but I'm going with the more readable version for now
 			if strings.HasPrefix(word, "site:") {

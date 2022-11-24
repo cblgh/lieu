@@ -289,9 +289,6 @@ func SearchWords(db *sql.DB, words []string, searchByScore bool, domain []string
     LIMIT 15
     `, strings.Join(wordlist, " OR "), strings.Join(domains, " OR "), strings.Join(nodomains, " AND "), strings.Join(languages, " OR "), orderType)
 
-	fmt.Println(words)
-	fmt.Println(query)
-
 	stmt, err := db.Prepare(query)
 	util.Check(err)
 	defer stmt.Close()
