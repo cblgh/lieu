@@ -6,7 +6,7 @@
     <form method="GET" class="search">
         <label for="search">Search {{ .SiteName }} </label>
         <span class="search__input">
-            <input type="search" minlength="1" required name="q" placeholder="Search" value="{{ .Data.Query }}" class="search-box" id="search">
+            <input type="search" minlength="1" required name="q" placeholder="Search" value="{{ .Data.Query }}" class="search-box" id="search" maxlength="6000">
             {{ if ne .Data.Site "" }} 
                 <input type="hidden" value="{{ .Data.Site }}" name="site">
             {{ end }}
