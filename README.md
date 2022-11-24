@@ -18,6 +18,12 @@ engine, a way for personal webrings to increase serendipitous connexions.
 
 ## Usage
 
+### How to search
+
+[Search query syntax and the search API are documented in their own file](docs/querying.md)
+
+### Getting Lieu running
+
 ```
 $ lieu help
 Lieu: neighbourhood search engine
