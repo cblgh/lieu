@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"regexp"
 	"strings"
 	"syscall"
 
@@ -61,17 +60,21 @@ var templates = template.Must(template.ParseFiles(
 
 const useURLTitles = true
 
-var sitePattern = regexp.MustCompile(`site:\S+`)
-
 func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) {
 	var query string
+	var domain string
 	view := &TemplateView{}
 
-	var domain string
+	var domains = []string{}
+	var nodomains = []string{}
+	var langs = []string{}
+	var queryFields = []string{}
+		
 	if req.Method == http.MethodGet {
 		params := req.URL.Query()
 		if words, exists := params["q"]; exists && words[0] != "" {
 			query = words[0]
+			queryFields = strings.Fields(query)
 		}
 
 		// how to use: https://gist.github.com/cblgh/29991ba0a9e65cccbe14f4afd7c975f1
@@ -80,29 +83,34 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 			domain = strings.TrimPrefix(parts[0], "https://")
 			domain = strings.TrimPrefix(domain, "http://")
 			domain = strings.TrimSuffix(domain, "/")
-		} else if sitePattern.MatchString(query) {
-			// if user searched with "site:<domain>" in text box, behave the same way as if a query param was used
-			domain = sitePattern.FindString(query)[5:]
+			domains = append(domains, domain)
 		}
-		// if clear button was used -> clear site param / search text
-		if parts, exists := params["clear"]; exists && parts[0] != "" {
-			domain = ""
-			query = sitePattern.ReplaceAllString(query, "")
+
+		var newQueryFields []string;
+		fmt.Println("Query Fields:", queryFields)
+		for _, word := range queryFields {
+			// This could be more efficient by splitting arrays, but I'm going with the more readable version for now
+			if strings.HasPrefix(word, "site:") {
+				domains = append(domains, strings.TrimPrefix(word, "site:"))
+			} else if strings.HasPrefix(word, "-site:") {
+				nodomains = append(nodomains, strings.TrimPrefix(word, "-site:"))
+			} else if strings.HasPrefix(word, "lang:") {
+				langs = append(langs, strings.TrimPrefix(word, "lang:"))
+			} else {
+				newQueryFields = append(newQueryFields, word)
+			}
 		}
+		queryFields = newQueryFields;
+		
 	}
 
-	if len(query) == 0 {
+	if len(queryFields) == 0 {
 		view.Data = IndexData{Tagline: h.config.General.Tagline, Placeholder: h.config.General.Placeholder}
 		h.renderView(res, "index", view)
 		return
 	}
 
-	var pages []types.PageData
-	if domain != "" {
-		pages = database.SearchWordsBySite(h.db, util.Inflect(strings.Fields(query)), domain)
-	} else {
-		pages = database.SearchWordsByScore(h.db, util.Inflect(strings.Fields(query)))
-	}
+	var pages = database.SearchWords(h.db, util.Inflect(queryFields), true, domains, nodomains, langs)
 
 	if useURLTitles {
 		for i, pageData := range pages {

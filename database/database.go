@@ -19,9 +19,12 @@ import (
 	"log"
 	"net/url"
 	"strings"
+	"regexp"
 
 	_ "github.com/mattn/go-sqlite3"
 )
+
+var languageCodeSanityRegex = regexp.MustCompile("^[a-zA-Z\\-0-9]+$")
 
 func InitDB(filepath string) *sql.DB {
 	db, err := sql.Open("sqlite3", filepath)
@@ -95,17 +98,19 @@ query params:
 &order=score, &order=count
 */
 
+var emptyStringArray = []string{}
+
 func SearchWordsByScore(db *sql.DB, words []string) []types.PageData {
-	return searchWords(db, words, true)
+	return SearchWords(db, words, true, emptyStringArray, emptyStringArray, emptyStringArray)
 }
 
 func SearchWordsBySite(db *sql.DB, words []string, domain string) []types.PageData {
 	// search words by site is same as search words by score, but adds a domain condition
-	return searchWords(db, words, true, domain)
+	return SearchWords(db, words, true, []string{domain}, emptyStringArray, emptyStringArray)
 }
 
 func SearchWordsByCount(db *sql.DB, words []string) []types.PageData {
-	return searchWords(db, words, false)
+	return SearchWords(db, words, false, emptyStringArray, emptyStringArray, emptyStringArray)
 }
 
 func FulltextSearchWords(db *sql.DB, phrase string) []types.PageData {
@@ -222,12 +227,16 @@ func countQuery(db *sql.DB, table string) int {
 	return count
 }
 
-func searchWords(db *sql.DB, words []string, searchByScore bool, domain ...string) []types.PageData {
-	var wordlist []string
+func SearchWords(db *sql.DB, words []string, searchByScore bool, domain []string, nodomain []string, language []string) []types.PageData {
 	var args []interface{}
-	for _, word := range words {
-		wordlist = append(wordlist, "word = ?")
-		args = append(args, strings.ToLower(word))
+
+	wordlist := []string{"1"}
+	if len(words) > 0 && words[0] != "" {
+		wordlist = make([]string, 0)
+		for _, word := range words {
+			wordlist = append(wordlist, "word = ?")
+			args = append(args, strings.ToLower(word))
+		}
 	}
 
 	// the domains conditional defaults to just 'true' i.e. no domain condition
@@ -237,6 +246,28 @@ func searchWords(db *sql.DB, words []string, searchByScore bool, domain ...strin
 		for _, d := range domain {
 			domains = append(domains, "domain = ?")
 			args = append(args, d)
+		}
+	}
+
+	nodomains := []string{"1"}
+	if len(nodomain) > 0 && nodomain[0] != "" {
+		nodomains = make([]string, 0)
+		for _, d := range nodomain {
+			nodomains = append(nodomains, "domain != ?")
+			args = append(args, d)
+		}
+	}
+
+	//This needs some wildcard support …
+	languages := []string{"1"}
+	if len(language) > 0 && language[0] != "" {
+		languages = make([]string, 0)
+		for _, d := range language {
+			// Do a little check to avoid the database being DOSed
+			if languageCodeSanityRegex.MatchString(d) {
+				languages = append(languages, "lang LIKE ?")
+				args = append(args, d+"%")
+			}
 		}
 	}
 
@@ -250,11 +281,16 @@ func searchWords(db *sql.DB, words []string, searchByScore bool, domain ...strin
     FROM inv_index inv INNER JOIN pages p ON inv.url = p.url 
     WHERE (%s)
     AND (%s)
+    AND (%s)
+    AND (%s)
     GROUP BY inv.url 
     ORDER BY %s
     DESC
     LIMIT 15
-    `, strings.Join(wordlist, " OR "), strings.Join(domains, " OR "), orderType)
+    `, strings.Join(wordlist, " OR "), strings.Join(domains, " OR "), strings.Join(nodomains, " AND "), strings.Join(languages, " OR "), orderType)
+
+	fmt.Println(words)
+	fmt.Println(query)
 
 	stmt, err := db.Prepare(query)
 	util.Check(err)
