@@ -89,13 +89,9 @@ func createTables(db *sql.DB) {
 }
 
 /* TODO: filters
-lang:en|fr|en|<..>
-nosite:excluded-domain.com
-
 "word1 word2 word3" strict query
 
-query params:
-&order=score, &order=count
+This one will reuqire more work than mere word or score counting …
 */
 
 var emptyStringArray = []string{}

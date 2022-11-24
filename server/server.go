@@ -69,6 +69,8 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 	var nodomains = []string{}
 	var langs = []string{}
 	var queryFields = []string{}
+
+	var searchByScore = true;
 		
 	if req.Method == http.MethodGet{
 		params := req.URL.Query()
@@ -86,6 +88,10 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 			domains = append(domains, domain)
 		}
 
+		if parts, exists := params["rank"]; exists && parts[0] != "" {
+			searchByScore = parts[0] != "count"
+		}
+
 		// don't process if there are too many fields
 		if len(queryFields) <= 100 {
 			var newQueryFields []string;
@@ -97,6 +103,10 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 					nodomains = append(nodomains, strings.TrimPrefix(word, "-site:"))
 				} else if strings.HasPrefix(word, "lang:") {
 					langs = append(langs, strings.TrimPrefix(word, "lang:"))
+				} else if word == "rank:count" {
+					searchByScore = false;
+				} else if word == "rank:score" {
+					searchByScore = true;
 				} else {
 					newQueryFields = append(newQueryFields, word)
 				}
@@ -112,7 +122,7 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	var pages = database.SearchWords(h.db, util.Inflect(queryFields), true, domains, nodomains, langs)
+	var pages = database.SearchWords(h.db, util.Inflect(queryFields), searchByScore, domains, nodomains, langs)
 
 	if useURLTitles {
 		for i, pageData := range pages {
