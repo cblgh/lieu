@@ -24,6 +24,7 @@ type RequestHandler struct {
 
 type TemplateView struct {
 	SiteName string
+	View string
 	Data     interface{}
 }
 
@@ -211,6 +212,7 @@ func (h RequestHandler) webringRoute(res http.ResponseWriter, req *http.Request)
 
 func (h RequestHandler) renderView(res http.ResponseWriter, tmpl string, view *TemplateView) {
 	view.SiteName = h.config.General.Name
+	view.View = tmpl
 	var errTemp error
 	if _, exists := os.LookupEnv("LIEU_DEV"); exists {
 		var templates = template.Must(template.ParseFiles(
