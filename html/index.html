@@ -3,12 +3,8 @@
 <main class="grid-items-center">
     <article class="translateY-75">
         <div class="flow">
-            <h1>
-                {{ .SiteName }}
-            </h1>
-            <h2 class="italic-text">
-                {{ .Data.Tagline }}
-            </h2>
+            <h1>{{ .SiteName }}</h1>
+            <p class="tagline">{{ .Data.Tagline }}</p>
 			<!-- The search form currently is in nav.html -->
             {{ template "search-form" . }}
         </div>
