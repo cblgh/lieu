@@ -3,18 +3,8 @@
 <main id="results" class="flow2">
     <h1>{{ .Data.Title }} {{ if ne .Data.Site "" }} for {{ .Data.Site }} {{ end }}</h1>
 
-    <form method="GET" class="search">
-        <label for="search">Search {{ .SiteName }} </label>
-        <span class="search__input">
-            <input type="search" minlength="1" required name="q" placeholder="Search" value="{{ .Data.Query }}" class="search-box" id="search">
-            {{ if ne .Data.Site "" }} 
-                <input type="hidden" value="{{ .Data.Site }}" name="site">
-            {{ end }}
-            <button type="submit" class="search__button" aria-label="Search" title="Search">
-                <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg" baseProfile="full" style="background:var(--secondary)" width="42" height="30" fill="none"><path d="M90 135q60-60 120-60 0 0 0 0 60 0 120 60m-120 60a60 60 0 01-60-60 60 60 0 0160-60 60 60 0 0160 60 60 60 0 01-60 60m45-15h0l30 30m-75-15h0v45m-45-60h0l-30 30" stroke-width="81" stroke-linecap="square" stroke-linejoin="round" stroke="var(--primary)"/></svg>
-            </button>
-        </span>
-    </form>
+	<!-- The search form currently is in nav.html -->
+	{{ template "search-form" . }}
     {{ if ne .Data.Site "" }} 
      <!-- add a button to clear the search results if a site:<domain> param has been used -->
         <form method="GET" class="search">
