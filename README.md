@@ -77,6 +77,8 @@ port = 10001
 
 [theme]
 # colors specified in hex (or valid css names) which determine the theme of the lieu instance
+# NOTE: If (and only if) all three values are set lieu uses those to generate the file html/assets/theme.css at startup.
+# You can also write directly to that file istead of adding this section to your configuration file
 foreground = "#ffffff"
 background = "#000000"
 links = "#ffffff"
