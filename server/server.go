@@ -255,8 +255,9 @@ func Serve(config types.Config) {
 	http.HandleFunc("/webring", handler.webringRoute)
 	http.HandleFunc("/filtered", handler.filteredRoute)
 
-	fileserver := http.FileServer(http.Dir("html/assets/"))
-	http.Handle("/assets/", http.StripPrefix("/assets/", fileserver))
+	fileserver := http.FileServer(http.Dir("html/"))
+	http.Handle("/assets/", fileserver)
+	http.Handle("/robots.txt", fileserver)
 
 	portstr := fmt.Sprintf(":%d", config.General.Port)
 	fmt.Println("Listening on port: ", portstr)
