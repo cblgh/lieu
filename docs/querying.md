@@ -3,25 +3,34 @@
 ## Search Syntax
 
 * `cat dog` - search for pages about cats or dogs, most probably both
-* `fox site:example.org` - search example.org (if indexed) for the therm "fox"
-* `fox -site:example.org` - search the entire index except `example.org` for the term "fox"
+* `fox site:example.org` - search example.org (if indexed) for term "fox"
+* `fox -site:example.org` - search all indexed sites except `example.org` for term "fox"
 * `emoji lang:de` - search pages that claim to mainly contain German content for the term "emoji"
 
-Things that don't matter are capitalisation and inflection.
-* All words in the query are converted to lowercase using the go standard library
-* All words are passed through [jinzhu's inflection library](https://github.com/jinzhu/inflection) for converting them to a possible singular form (note that this is intended to work with English nouns)
+When searching, capitalisation and inflection do not matter, as search terms are:
+
+* Converted to lowercase using the go standard library
+* Passed through [jinzhu's inflection library](https://github.com/jinzhu/inflection) for
+  converting to a possible singular form (intended to work with English nouns)
 
 ## Search API
 
 Lieu currently only renders its results to HTML. A query can be passed to the `/` endpoint using a `GET` request.
 
 It supports two URL parameters:
-* `q` - Used for the search query
-* `site` - accepts one domain name and will have the same effect as the `site:<domain>` syntax. You can use this to make your webrings search engine double as a searchbox on your website.
+* `q` - used for the search query
+* `site` - accepts one domain name and will have the same effect as the `site:<domain>` syntax.
+  You can use this to make your webrings search engine double as a searchbox on your website.
 
-An example query to search `example.org` for the term "ssh" using `search.webring.example` should look like this: `https://search.webring.example/?q=ssh&site=example.org`
+### Examples
+To search `example.org` for the term "ssh" using `https://search.webring.example`:
 
-A search-form on example.org could look a bit like this:
+```
+https://search.webring.example/?q=ssh&site=example.org
+```
+
+Adding a form element, to use Lieu as a search engine, to the HTML at example.org:
+
 ```
 <form method="GET" action="https://search.webring.example">
 	<label for="search">Search example.org</label>
