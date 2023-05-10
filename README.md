@@ -20,7 +20,7 @@ engine, a way for personal webrings to increase serendipitous connexions.
 
 ### How to search
 
-For the full search syntax (including how to use `site:` and `-site:`), see the [search syntax and API documentation](docs/querying.md).
+For the full search syntax (including how to use `site:` and `-site:`), see the [search syntax and API documentation](docs/querying.md). For more tips, read the [appendix](https://cblgh.org/lieu/).
 
 ### Getting Lieu running
 
