@@ -1,11 +1,29 @@
 {{ define "nav" }}
 <header class="header-home">
-        <a class="header-home_link" href="/">{{ .SiteName }}</a>
-    <nav>
-        <ul class="header-home_navigation" role='list'>
-            <li><a href="/webring">Webring</a></li>
-            <li><a href="/about">About</a></li>
-        </ul>
-    </nav>
+	{{ if eq .View "index" }}
+	<a class="header-home_link" href="https://github.com/cblgh/lieu">Lieu</a>
+	{{else}}
+	<a class="header-home_link" href="/">{{ .SiteName }}</a>
+	{{ end }}
+	<nav>
+		<ul class="header-home_navigation">
+			<li><a href="/webring" title="Webring (external link)">Webring<span aria-hidden="true"> ↗</span></a></li>
+			<li><a href="/about" {{if eq .View "about"}}aria-current="page"{{end}}>About</a></li>
+		</ul>
+	</nav>
 </header>
+{{ end }}
+
+{{ define "search-form" }}
+	<form method="GET" class="search">
+		<span class="search__input">
+			<input type="search" minlength="1" required name="q" aria-label="Search {{ .SiteName }}" placeholder="Search {{ .SiteName }}" {{ if (eq .View "search") }}value="{{ .Data.Query }}"{{ end }} class="search-box" id="search" maxlength="6000">
+			{{ if and (eq .View "search") (ne .Data.Site "") }}
+			<input type="hidden" value="{{ .Data.Site }}" name="site">
+			{{ end }}
+			<button type="submit" class="search__button" aria-label="Search" title="Search">
+				<svg aria-hidden="true" viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg" baseProfile="full" width="42" height="30" fill="none"><path d="M90 135q60-60 120-60 0 0 0 0 60 0 120 60m-120 60a60 60 0 01-60-60 60 60 0 0160-60 60 60 0 0160 60 60 60 0 01-60 60m45-15h0l30 30m-75-15h0v45m-45-60h0l-30 30" stroke-width="81" stroke-linecap="square" stroke-linejoin="round" stroke="var(--primary)"/></svg>
+			</button>
+		</span>
+	</form>
 {{ end }}

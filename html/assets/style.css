@@ -59,7 +59,7 @@ h1 {
     line-height: 1;
 }
 
-h2 {
+h2, .tagline {
     font-family: "Noto Serif";
     font-weight: 400;
     font-size: 2.4rem;
@@ -196,7 +196,7 @@ nav li {
 
 /* UTILITY CLASSES */
 
-.italic-text {
+.italic-text, .tagline {
     font-style: italic;
 }
 
