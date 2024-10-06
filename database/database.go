@@ -141,7 +141,17 @@ func FulltextSearchWords(db *sql.DB, phrase string) []types.PageData {
 }
 
 func FulltextSearchWholeParagraphs(db *sql.DB, phrase string) []types.PageData {
-	query := fmt.Sprintf(`SELECT HIGHLIGHT(big_search, 0, '<strong>', '</strong>'), url from big_search WHERE text MATCH ? ORDER BY rank LIMIT 30`)
+	query := fmt.Sprintf(`
+	SELECT HIGHLIGHT(big_search, 0, '<strong>', '</strong>') text, url from big_search WHERE text MATCH ? ORDER BY rank LIMIT 30
+	`)
+
+	 // select word, url from inv_index where url = (select distinct url from inv_index limit 100);
+
+	// 1: SELECT HIGHLIGHT(big_search, 0, '<strong>', '</strong>'), url from big_search WHERE text MATCH ? ORDER BY rank LIMIT 30
+  //
+	// 2: SELECT HIGHLIGHT(big_search, 0, '<strong>', '</strong>'), url from big_search WHERE text MATCH ? GROUP BY url ORDER BY rank LIMIT 30
+  //
+	// 3: SELECT text, url from big_search WHERE text MATCH ? GROUP BY url ORDER BY rank LIMIT 30
 
 	stmt, err := db.Prepare(query)
 	util.Check(err)
@@ -153,15 +163,22 @@ func FulltextSearchWholeParagraphs(db *sql.DB, phrase string) []types.PageData {
 
 	var pageData types.PageData
 	var pages []types.PageData
+	// `duplicates` keeps track of whether the same text has been returned already -> deduplicates search results. 
+	//
+	// rationale: for the dataset i am testing this on (merveilles forum) the links to the same thread can change, and so
+	// it's more useful to track dupes on a per paragraph basis than per-url.
+	duplicates := make(map[string]bool)
 	var about string
 	for rows.Next() {
 		if err := rows.Scan(&about, &pageData.URL); err != nil {
-			fmt.Println(pageData)
 			log.Fatalln(err)
 		}
-		pageData.URL = pageData.URL
-		pageData.ParagraphResult = template.HTML(about)
-		pages = append(pages, pageData)
+		if _, exists := duplicates[about]; !exists {
+			pageData.URL = pageData.URL
+			pageData.ParagraphResult = template.HTML(about)
+			pages = append(pages, pageData)
+			duplicates[about] = true
+		}
 	}
 	return pages
 }
