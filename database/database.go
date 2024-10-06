@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"lieu/types"
 	"lieu/util"
+	"html/template"
 	"log"
 	"net/url"
 	"strings"
@@ -78,7 +79,10 @@ func createTables(db *sql.DB) {
         url TEXT NOT NULL,
         FOREIGN KEY(url) REFERENCES pages(url)
     )`,
+
 		`CREATE VIRTUAL TABLE IF NOT EXISTS external_links USING fts5 (url, tokenize="trigram")`,
+
+		`CREATE VIRTUAL TABLE IF NOT EXISTS big_search USING fts5 (text, url, tokenize="trigram")`,
 	}
 
 	for _, query := range queries {
@@ -131,6 +135,32 @@ func FulltextSearchWords(db *sql.DB, phrase string) []types.PageData {
 			log.Fatalln(err)
 		}
 		pageData.Title = pageData.URL
+		pages = append(pages, pageData)
+	}
+	return pages
+}
+
+func FulltextSearchWholeParagraphs(db *sql.DB, phrase string) []types.PageData {
+	query := fmt.Sprintf(`SELECT HIGHLIGHT(big_search, 0, '<strong>', '</strong>'), url from big_search WHERE text MATCH ? ORDER BY rank LIMIT 30`)
+
+	stmt, err := db.Prepare(query)
+	util.Check(err)
+	defer stmt.Close()
+
+	rows, err := stmt.Query(phrase)
+	util.Check(err)
+	defer rows.Close()
+
+	var pageData types.PageData
+	var pages []types.PageData
+	var about string
+	for rows.Next() {
+		if err := rows.Scan(&about, &pageData.URL); err != nil {
+			fmt.Println(pageData)
+			log.Fatalln(err)
+		}
+		pageData.URL = pageData.URL
+		pageData.ParagraphResult = template.HTML(about)
 		pages = append(pages, pageData)
 	}
 	return pages
@@ -380,6 +410,24 @@ func InsertManyExternalLinks(db *sql.DB, externalLinks []string) {
 	}
 
 	stmt := fmt.Sprintf(`INSERT OR IGNORE INTO external_links(url) VALUES %s`, strings.Join(values, ","))
+	_, err := db.Exec(stmt, args...)
+	util.Check(err)
+}
+
+func InsertManyBigParagraphs(db *sql.DB, paragraphPairs []types.WholeParagraph) {
+	if len(paragraphPairs) == 0 {
+		return
+	}
+
+	values := make([]string, 0, len(paragraphPairs))
+	args := make([]interface{}, 0, len(paragraphPairs))
+
+	for _, paragraphPair := range paragraphPairs {
+		values = append(values, "(?, ?)")
+		args = append(args, paragraphPair.Text, paragraphPair.URL)
+	}
+
+	stmt := fmt.Sprintf(`INSERT OR IGNORE INTO big_search(text, url) VALUES %s`, strings.Join(values, ","))
 	_, err := db.Exec(stmt, args...)
 	util.Check(err)
 }

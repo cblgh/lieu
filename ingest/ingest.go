@@ -84,6 +84,7 @@ func Ingest(config types.Config) {
 	var batchsize = 100
 	batch := make([]types.SearchFragment, 0, 0)
 	var externalLinks []string
+	paragraphPairs := make([]types.WholeParagraph, 0, 0)
 
 	scanner := bufio.NewScanner(buf)
 	for scanner.Scan() {
@@ -157,6 +158,8 @@ func Ingest(config types.Config) {
 			processed = strings.Split(strings.ReplaceAll(payload, ", ", ","), ",")
 		case "non-webring-link":
 			externalLinks = append(externalLinks, rawdata)
+		case "big-para":
+			paragraphPairs = append(paragraphPairs, types.WholeParagraph{Text: rawdata, URL: pageurl})
 		default:
 			continue
 		}
@@ -178,21 +181,22 @@ func Ingest(config types.Config) {
 		}
 
 		if len(pages) > batchsize {
-			ingestBatch(db, batch, pages, externalLinks)
+			ingestBatch(db, batch, pages, externalLinks, paragraphPairs)
 			externalLinks = make([]string, 0, 0)
+			paragraphPairs = make([]types.WholeParagraph, 0, 0)
 			batch = make([]types.SearchFragment, 0, 0)
 			// TODO: make sure we don't partially insert any page data
 			pages = make(map[string]types.PageData)
 		}
 	}
-	ingestBatch(db, batch, pages, externalLinks)
+	ingestBatch(db, batch, pages, externalLinks, paragraphPairs)
 	fmt.Printf("ingested %d words\n", count)
 
 	err = scanner.Err()
 	util.Check(err)
 }
 
-func ingestBatch(db *sql.DB, batch []types.SearchFragment, pageMap map[string]types.PageData, links []string) {
+func ingestBatch(db *sql.DB, batch []types.SearchFragment, pageMap map[string]types.PageData, links []string, paragraphPairs []types.WholeParagraph) {
 	pages := make([]types.PageData, len(pageMap))
 	i := 0
 	for k := range pageMap {
@@ -211,6 +215,7 @@ func ingestBatch(db *sql.DB, batch []types.SearchFragment, pageMap map[string]ty
 		database.InsertManyWords(db, batch[i:end_i])
 	}
 	database.InsertManyExternalLinks(db, links)
+	database.InsertManyBigParagraphs(db, paragraphPairs)
 	log.Println("finished ingesting batch")
 }
 

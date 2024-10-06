@@ -33,7 +33,7 @@
                 </li>
                 <li title="content linked from webring sites, but which reside outside it"
                     class="{{ if .Data.IsInternal | not }} result__current {{ end }}">
-                    <a href="/outgoing?q={{ .Data.Query }}">Outgoing</a>
+                    <a href="/outgoing?q={{ .Data.Query }}">Big Search</a>
                 </li>
             </ul>
         </nav>
@@ -43,7 +43,7 @@
         {{ range $index, $a := .Data.Pages }}
             <li class="entry">
                 <a aria-described-by="link-{{ $index }}" class="entry__link" href="{{ .URL }}">{{ .Title }}</a>
-                <p id="link-{{ $index }}" class="entry__text">{{ .About }}</p>
+                <p id="link-{{ $index }}" class="entry__text">{{ .ParagraphResult }}</p>
             </li>
         {{ end }}
         </ul>

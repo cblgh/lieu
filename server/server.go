@@ -144,7 +144,7 @@ func (h RequestHandler) externalSearchRoute(res http.ResponseWriter, req *http.R
 		}
 	}
 
-	pages := database.FulltextSearchWords(h.db, query)
+	pages := database.FulltextSearchWholeParagraphs(h.db, query)
 
 	if useURLTitles {
 		for i, pageData := range pages {
@@ -156,7 +156,7 @@ func (h RequestHandler) externalSearchRoute(res http.ResponseWriter, req *http.R
 	}
 
 	view.Data = SearchData{
-		Title:      "External Results",
+		Title:      "Big Search Results",
 		Query:      query,
 		Pages:      pages,
 		IsInternal: false,

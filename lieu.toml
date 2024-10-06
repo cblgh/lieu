@@ -1,14 +1,20 @@
 [general]
-name = "Sweet Webring"
-tagline = "the search for the new—endless"
-placeholder = "Search"
+name = "Forum Search"
+tagline = "search all of forum.merveilles.town"
+placeholder = "Forum Search"
 # used by the precrawl command and linked to in /about route
 url = "https://example.com/"
-port = 10001
+port = 10099
+
+[theme]
+# colors specified in hex (or valid css names) which determine the theme of the lieu instance
+background = "#1E1F20"
+foreground = "#FFF" # "#FFCCBB"
+links = "#FF8000" # "#FFCCBB"  
 
 [data]
 # the source file should contain the crawl command's output 
-source = "data/crawled.txt"
+source = "data/source.txt"
 # location & name of the sqlite database
 database = "data/searchengine.db"
 # contains words and phrases disqualifying scraped paragraphs from being presented in search results

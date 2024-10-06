@@ -168,10 +168,18 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 				}
 			}
 		}
-		paragraph := cleanText(e.DOM.Find("p").First().Text())
-		if len(paragraph) < 1500 && len(paragraph) > 0 {
-			fmt.Println("para-just-p", paragraph, e.Request.URL)
+
+		paragraphs := e.DOM.Find("p")
+		for i := 0; i < paragraphs.Length(); i++ {
+			paragraph := cleanText(paragraphs.Slice(i, i+1).Text())
+			if !util.Contains(heuristics, strings.ToLower(paragraph)) {
+				fmt.Println("big-para", paragraph, e.Request.URL)
+			}
 		}
+		// paragraph := cleanText(e.DOM.Find("p").First().Text())
+		// if len(paragraph) < 1500 && len(paragraph) > 0 {
+		// 	fmt.Println("para-just-p", paragraph, e.Request.URL)
+		// }
 
 		// get all relevant page headings
 		collectHeadingText("h1", e)
