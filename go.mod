@@ -8,4 +8,5 @@ require (
 	github.com/jinzhu/inflection v1.0.0
 	github.com/komkom/toml v0.0.0-20210129103441-ff0648d25a4b
 	github.com/mattn/go-sqlite3 v1.14.6
+	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
 )

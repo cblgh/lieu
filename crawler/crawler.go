@@ -11,10 +11,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
 )
+
+var contentPolicy = bluemonday.StrictPolicy() // remove all html tags and possible XSS from the input
+var whitespacePattern = regexp.MustCompile(`\p{Z}+`)
 
 // the following domains are excluded from crawling & indexing, typically because they have a lot of microblog pages
 // (very spammy)
@@ -24,6 +28,20 @@ func getBannedDomains(path string) []string {
 
 func getBannedSuffixes(path string) []string {
 	return util.ReadList(path, "\n")
+}
+
+// prevents us from crawling or logging data from e.g. voluminous pages like accidentally ending up in a repo,
+// tag categories, pages with only images
+func getBannedURLParts() []*regexp.Regexp {
+	parts := []string{"gallery",
+	"repo", "repos", "repository", "repositories",
+	"tags", "tag", "tagged", "t",
+	"commit", "commits"}
+	patterns := make([]*regexp.Regexp, 0, len(parts))
+	for _, part := range parts {
+		patterns = append(patterns, regexp.MustCompile(fmt.Sprintf(`https?:\/\/\S+\/%s\/\S+`, part)))
+	}
+	return patterns
 }
 
 func getBoringWords(path string) []string {
@@ -116,9 +134,12 @@ func findSuffix(suffixes []string, query string) bool {
 func cleanText(s string) string {
 	s = strings.TrimSpace(s)
 	s = strings.ReplaceAll(s, "\n", " ")
-	whitespace := regexp.MustCompile(`\p{Z}+`)
-	s = whitespace.ReplaceAllString(s, " ")
+	s = whitespacePattern.ReplaceAllString(s, " ")
 	return s
+}
+
+func cleanTextStrict(s string) string {
+	return contentPolicy.Sanitize(cleanText(s))
 }
 
 func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []string) {
@@ -171,15 +192,13 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 
 		paragraphs := e.DOM.Find("p")
 		for i := 0; i < paragraphs.Length(); i++ {
-			paragraph := cleanText(paragraphs.Slice(i, i+1).Text())
-			if !util.Contains(heuristics, strings.ToLower(paragraph)) {
-				fmt.Println("big-para", paragraph, e.Request.URL)
+			paragraph := cleanTextStrict(paragraphs.Slice(i, i+1).Text())
+			if len(paragraph) < 1500 && len(paragraph) > 20 {
+				if !util.Contains(heuristics, strings.ToLower(paragraph)) {
+					fmt.Println("big-para", paragraph, e.Request.URL)
+				}
 			}
 		}
-		// paragraph := cleanText(e.DOM.Find("p").First().Text())
-		// if len(paragraph) < 1500 && len(paragraph) > 0 {
-		// 	fmt.Println("para-just-p", paragraph, e.Request.URL)
-		// }
 
 		// get all relevant page headings
 		collectHeadingText("h1", e)
@@ -291,6 +310,9 @@ func Crawl(config types.Config) {
 	c.AllowedDomains = domains
 	c.AllowURLRevisit = false
 	c.DisallowedDomains = getBannedDomains(config.Crawler.BannedDomains)
+	// from colly's docs: "DisallowedURLFilters sets the list of regular expressions which restricts visiting URLs. If any of the rules
+	// matches to a URL the request will be stopped."
+	c.DisallowedURLFilters = getBannedURLParts()
 
 	delay, _ := time.ParseDuration("200ms")
 	c.Limit(&colly.LimitRule{DomainGlob: "*", Delay: delay, Parallelism: 3})

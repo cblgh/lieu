@@ -82,7 +82,7 @@ func createTables(db *sql.DB) {
 
 		`CREATE VIRTUAL TABLE IF NOT EXISTS external_links USING fts5 (url, tokenize="trigram")`,
 
-		`CREATE VIRTUAL TABLE IF NOT EXISTS big_search USING fts5 (text, url, tokenize="trigram")`,
+		`CREATE VIRTUAL TABLE IF NOT EXISTS big_search USING fts5 (text, url, tokenize="porter")`,
 	}
 
 	for _, query := range queries {
@@ -140,10 +140,35 @@ func FulltextSearchWords(db *sql.DB, phrase string) []types.PageData {
 	return pages
 }
 
-func FulltextSearchWholeParagraphs(db *sql.DB, phrase string) []types.PageData {
+func FulltextSearchWholeParagraphs(db *sql.DB, phrase string, domain []string, nodomain []string) []types.PageData {
+	var args []interface{}
+	args = append(args, phrase)
+
+	domains := []string{"1"}
+	if len(domain) > 0 && domain[0] != "" {
+		domains = make([]string, 0) // we've got at least one domain! clear domains default
+		for _, d := range domain {
+			domains = append(domains, "p.domain = ?")
+			args = append(args, d)
+		}
+	}
+
+	nodomains := []string{"1"}
+	if len(nodomain) > 0 && nodomain[0] != "" {
+		nodomains = make([]string, 0)
+		for _, d := range nodomain {
+			nodomains = append(nodomains, "p.domain != ?")
+			args = append(args, d)
+		}
+	}
+
 	query := fmt.Sprintf(`
-	SELECT HIGHLIGHT(big_search, 0, '<strong>', '</strong>') text, url from big_search WHERE text MATCH ? ORDER BY rank LIMIT 30
-	`)
+	SELECT bs.text, p.about, HIGHLIGHT(big_search, 0, '<strong>', '</strong>'), bs.url FROM big_search bs INNER JOIN pages p ON bs.url = p.url 
+	WHERE bs.text MATCH ? 
+  AND (%s)
+  AND (%s)
+	ORDER BY bs.rank LIMIT 30
+	`, strings.Join(domains, " OR "), strings.Join(nodomains, " AND "))
 
 	 // select word, url from inv_index where url = (select distinct url from inv_index limit 100);
 
@@ -157,7 +182,7 @@ func FulltextSearchWholeParagraphs(db *sql.DB, phrase string) []types.PageData {
 	util.Check(err)
 	defer stmt.Close()
 
-	rows, err := stmt.Query(phrase)
+	rows, err := stmt.Query(args...)
 	util.Check(err)
 	defer rows.Close()
 
@@ -168,16 +193,22 @@ func FulltextSearchWholeParagraphs(db *sql.DB, phrase string) []types.PageData {
 	// rationale: for the dataset i am testing this on (merveilles forum) the links to the same thread can change, and so
 	// it's more useful to track dupes on a per paragraph basis than per-url.
 	duplicates := make(map[string]bool)
-	var about string
+	var paragraphMatch string
+	var unadornedParagraphMatch string
 	for rows.Next() {
-		if err := rows.Scan(&about, &pageData.URL); err != nil {
+		if err := rows.Scan(&unadornedParagraphMatch, &pageData.About, &paragraphMatch, &pageData.URL); err != nil {
 			log.Fatalln(err)
 		}
-		if _, exists := duplicates[about]; !exists {
+		if _, exists := duplicates[paragraphMatch]; !exists {
+			pageData.About = pageData.About
+			// both About and the fts paragraph contain the same, null the about paragraph
+			if strings.EqualFold(unadornedParagraphMatch, pageData.About) {
+				pageData.About = ""
+			}
 			pageData.URL = pageData.URL
-			pageData.ParagraphResult = template.HTML(about)
+			pageData.ParagraphResult = template.HTML(paragraphMatch)
 			pages = append(pages, pageData)
-			duplicates[about] = true
+			duplicates[paragraphMatch] = true
 		}
 	}
 	return pages

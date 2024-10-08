@@ -124,7 +124,7 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 	}
 
 	view.Data = SearchData{
-		Title:      "Results",
+		Title:      "Link Results",
 		Query:      query,
 		Site:       domain,
 		Pages:      pages,
@@ -135,16 +135,48 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 
 func (h RequestHandler) externalSearchRoute(res http.ResponseWriter, req *http.Request) {
 	var query string
+	var domain string
 	view := &TemplateView{}
+
+	var queryFields []string
+	var domains []string
+	var nodomains []string
 
 	if req.Method == http.MethodGet {
 		params := req.URL.Query()
 		if words, exists := params["q"]; exists && words[0] != "" {
 			query = words[0]
+			queryFields = strings.Fields(query)
+		}
+
+
+		// how to use: https://gist.github.com/cblgh/29991ba0a9e65cccbe14f4afd7c975f1
+		if parts, exists := params["site"]; exists && parts[0] != "" {
+			// make sure we only have the domain, and no protocol prefix
+			domain = strings.TrimPrefix(parts[0], "https://")
+			domain = strings.TrimPrefix(domain, "http://")
+			domain = strings.TrimSuffix(domain, "/")
+			domains = append(domains, domain)
+		}
+
+		var newQueryFields []string
+		// don't process if there are too many fields
+		if len(queryFields) <= 100 {
+			for _, word := range queryFields {
+				// This could be more efficient by splitting arrays, but I'm going with the more readable version for now
+				if strings.HasPrefix(word, "site:") {
+					domains = append(domains, strings.TrimPrefix(word, "site:"))
+				} else if strings.HasPrefix(word, "-site:") {
+					nodomains = append(nodomains, strings.TrimPrefix(word, "-site:"))
+				} else {
+					newQueryFields = append(newQueryFields, word)
+				}
+			}
+			query = strings.Join(newQueryFields, " ");
 		}
 	}
 
-	pages := database.FulltextSearchWholeParagraphs(h.db, query)
+	pages := database.FulltextSearchWholeParagraphs(h.db, query, domains, nodomains)
 
 	if useURLTitles {
 		for i, pageData := range pages {
@@ -156,8 +188,9 @@ func (h RequestHandler) externalSearchRoute(res http.ResponseWriter, req *http.R
 	}
 
 	view.Data = SearchData{
-		Title:      "Big Search Results",
-		Query:      query,
+		Title:      "Paragraph Search Results",
+		Site:       domain,
+		Query:      strings.Join(queryFields, " "),
 		Pages:      pages,
 		IsInternal: false,
 	}
