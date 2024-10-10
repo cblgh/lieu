@@ -202,7 +202,13 @@ func FulltextSearchWholeParagraphs(db *sql.DB, phrase string, domain []string, n
 		if _, exists := duplicates[paragraphMatch]; !exists {
 			pageData.About = pageData.About
 			// both About and the fts paragraph contain the same, null the about paragraph
-			if strings.EqualFold(unadornedParagraphMatch, pageData.About) {
+			// note: the crawled data represented by `unadornedParagarphMatch` has been run through bluemonday's strict
+			// santiization. this means a lot of html escapes are present in the text. in order to do a fair comparison, we
+			// need to run the same sanitzation on pageData.About for comparing purposes. 
+			//
+			// secondary note: pageData.About *does not* need to be sanitize - it is not rendered using the `unsafe` 
+			// template.HTML* type; golang's templates will autoescape its content as needed.
+			if strings.EqualFold(unadornedParagraphMatch, util.CleanTextStrict(pageData.About)) {
 				pageData.About = ""
 			}
 			pageData.URL = pageData.URL

@@ -14,6 +14,7 @@ import (
 
 	"lieu/types"
 
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/jinzhu/inflection"
 	"github.com/komkom/toml"
 )
@@ -115,6 +116,21 @@ func Humanize(n int) string {
 
 	return fmt.Sprintf("%d", n)
 }
+
+var contentPolicy = bluemonday.StrictPolicy() // remove all html tags and possible XSS from the input
+var whitespacePattern = regexp.MustCompile(`\p{Z}+`)
+
+func CleanText(s string) string {
+	s = strings.TrimSpace(s)
+	s = strings.ReplaceAll(s, "\n", " ")
+	s = whitespacePattern.ReplaceAllString(s, " ")
+	return s
+}
+
+func CleanTextStrict(s string) string {
+	return contentPolicy.Sanitize(CleanText(s))
+}
+
 
 func Contains(arr []string, query string) bool {
 	for _, item := range arr {

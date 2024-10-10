@@ -11,14 +11,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
 )
-
-var contentPolicy = bluemonday.StrictPolicy() // remove all html tags and possible XSS from the input
-var whitespacePattern = regexp.MustCompile(`\p{Z}+`)
 
 // the following domains are excluded from crawling & indexing, typically because they have a lot of microblog pages
 // (very spammy)
@@ -131,38 +127,27 @@ func findSuffix(suffixes []string, query string) bool {
 	return false
 }
 
-func cleanText(s string) string {
-	s = strings.TrimSpace(s)
-	s = strings.ReplaceAll(s, "\n", " ")
-	s = whitespacePattern.ReplaceAllString(s, " ")
-	return s
-}
-
-func cleanTextStrict(s string) string {
-	return contentPolicy.Sanitize(cleanText(s))
-}
-
 func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []string) {
 	c.OnHTML("meta[name=\"keywords\"]", func(e *colly.HTMLElement) {
-		fmt.Println("keywords", cleanText(e.Attr("content")), e.Request.URL)
+		fmt.Println("keywords", util.CleanText(e.Attr("content")), e.Request.URL)
 	})
 
 	c.OnHTML("meta[name=\"description\"]", func(e *colly.HTMLElement) {
-		desc := cleanText(e.Attr("content"))
+		desc := util.CleanText(e.Attr("content"))
 		if len(desc) > 0 && len(desc) < 1500 {
 			fmt.Println("desc", desc, e.Request.URL)
 		}
 	})
 
 	c.OnHTML("meta[property=\"og:description\"]", func(e *colly.HTMLElement) {
-		ogDesc := cleanText(e.Attr("content"))
+		ogDesc := util.CleanText(e.Attr("content"))
 		if len(ogDesc) > 0 && len(ogDesc) < 1500 {
 			fmt.Println("og-desc", ogDesc, e.Request.URL)
 		}
 	})
 
 	c.OnHTML("html[lang]", func(e *colly.HTMLElement) {
-		lang := cleanText(e.Attr("lang"))
+		lang := util.CleanText(e.Attr("lang"))
 		if len(lang) > 0 && len(lang) < 100 {
 			fmt.Println("lang", lang, e.Request.URL)
 		}
@@ -170,7 +155,7 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 
 	// get page title
 	c.OnHTML("title", func(e *colly.HTMLElement) {
-		fmt.Println("title", cleanText(e.Text), e.Request.URL)
+		fmt.Println("title", util.CleanText(e.Text), e.Request.URL)
 	})
 
 	c.OnHTML("body", func(e *colly.HTMLElement) {
@@ -180,7 +165,7 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 			elements := e.DOM.Find(previewQueries[i])
 			for j := 0; j < 4 && j < elements.Length(); j++ {
 				element_text := elements.Slice(j, j+1).Text()
-				paragraph := cleanText(element_text)
+				paragraph := util.CleanText(element_text)
 				if len(paragraph) < 1500 && len(paragraph) > 20 {
 					if !util.Contains(heuristics, strings.ToLower(paragraph)) {
 						fmt.Println("para", paragraph, e.Request.URL)
@@ -192,7 +177,7 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 
 		paragraphs := e.DOM.Find("p")
 		for i := 0; i < paragraphs.Length(); i++ {
-			paragraph := cleanTextStrict(paragraphs.Slice(i, i+1).Text())
+			paragraph := util.CleanTextStrict(paragraphs.Slice(i, i+1).Text())
 			if len(paragraph) < 1500 && len(paragraph) > 20 {
 				if !util.Contains(heuristics, strings.ToLower(paragraph)) {
 					fmt.Println("big-para", paragraph, e.Request.URL)
@@ -210,7 +195,7 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 func collectHeadingText(heading string, e *colly.HTMLElement) {
 	for _, headingText := range e.ChildTexts(heading) {
 		if len(headingText) < 500 {
-			fmt.Println(heading, cleanText(headingText), e.Request.URL)
+			fmt.Println(heading, util.CleanText(headingText), e.Request.URL)
 		}
 	}
 }
