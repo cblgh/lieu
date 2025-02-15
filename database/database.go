@@ -211,6 +211,18 @@ func FulltextSearchWholeParagraphs(db *sql.DB, phrase string, domain []string, n
 			if strings.EqualFold(unadornedParagraphMatch, util.CleanTextStrict(pageData.About)) {
 				pageData.About = ""
 			}
+			// TODO (2024-10-10): surface search syntax legend (details/summary dropdown with pos absolute?) displaying 
+			// tricks for links and paragraph search respectively
+
+			// TODO (2024-10-10): convert ParagraphResult to be []template.HTML and collect paragraphs per unique url. 
+			// if a len(slice) > 1, render in template as <ul><li>..</li></ul> for all the paragraph matches (but not the pageData.About)
+			// example https://i.cblgh.org/2024-10/11788Ohq.png
+
+			// IDEA (2024-10-11): augment "links search" by using the results returned by it, to then perform a FTS search
+			// `where url = ? OR url = ? ..." for each url returned by the links search results. 
+			//  
+			// this offers a greater precision (maybe?) using the initial weighted ranking, and then gets us depth of results
+			// by running a constrained fts
 			pageData.URL = pageData.URL
 			pageData.ParagraphResult = template.HTML(paragraphMatch)
 			pages = append(pages, pageData)
