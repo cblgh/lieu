@@ -283,6 +283,7 @@ func Crawl(config types.Config) {
 	c.AllowedDomains = domains
 	c.AllowURLRevisit = false
 	c.DisallowedDomains = getBannedDomains(config.Crawler.BannedDomains)
+	c.IgnoreRobotsTxt = false
 
 	delay, _ := time.ParseDuration("200ms")
 	c.Limit(&colly.LimitRule{DomainGlob: "*", Delay: delay, Parallelism: 3})
