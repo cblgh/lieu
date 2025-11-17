@@ -2,8 +2,8 @@ package crawler
 
 import (
 	"fmt"
-	"lieu/types"
-	"lieu/util"
+	"gomod.cblgh.org/lieu/types"
+	"gomod.cblgh.org/lieu/util"
 	"log"
 	"net/http"
 	"net/url"

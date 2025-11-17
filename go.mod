@@ -1,4 +1,4 @@
-module lieu
+module gomod.cblgh.org/lieu
 
 go 1.14
 

@@ -14,8 +14,8 @@ select url from inv_index where word = "<word>" group by url order by sum(score)
 import (
 	"database/sql"
 	"fmt"
-	"lieu/types"
-	"lieu/util"
+	"gomod.cblgh.org/lieu/types"
+	"gomod.cblgh.org/lieu/util"
 	"html/template"
 	"log"
 	"net/url"

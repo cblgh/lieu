@@ -12,7 +12,7 @@ import (
 	"regexp"
 	"strings"
 
-	"lieu/types"
+	"gomod.cblgh.org/lieu/types"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/jinzhu/inflection"

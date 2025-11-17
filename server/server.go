@@ -11,9 +11,9 @@ import (
 	"syscall"
 
 	"html/template"
-	"lieu/database"
-	"lieu/types"
-	"lieu/util"
+	"gomod.cblgh.org/lieu/database"
+	"gomod.cblgh.org/lieu/types"
+	"gomod.cblgh.org/lieu/util"
 )
 
 type RequestHandler struct {
