@@ -298,6 +298,7 @@ func Crawl(config types.Config) {
 	// from colly's docs: "DisallowedURLFilters sets the list of regular expressions which restricts visiting URLs. If any of the rules
 	// matches to a URL the request will be stopped."
 	c.DisallowedURLFilters = getBannedURLParts()
+	c.IgnoreRobotsTxt = false
 
 	delay, _ := time.ParseDuration("200ms")
 	c.Limit(&colly.LimitRule{DomainGlob: "*", Delay: delay, Parallelism: 3})
