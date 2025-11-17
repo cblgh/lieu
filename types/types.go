@@ -1,15 +1,25 @@
 package types
 
+import (
+	"html/template"
+)
+
 type SearchFragment struct {
 	Word  string
 	URL   string
 	Score int
 }
 
+type WholeParagraph struct {
+	Text  string
+	URL   string
+}
+
 type PageData struct {
 	URL         string
 	Title       string
 	About       string
+	ParagraphResult template.HTML
 	Lang        string
 	AboutSource string
 }

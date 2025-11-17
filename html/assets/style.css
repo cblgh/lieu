@@ -17,6 +17,10 @@ html {
     font-size: 62.5%;
 }
 
+strong {
+    color: var(--link);
+}
+
 /* defaults for old browsers */
 body {
     color: white; 

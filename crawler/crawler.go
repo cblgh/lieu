@@ -2,8 +2,8 @@ package crawler
 
 import (
 	"fmt"
-	"lieu/types"
-	"lieu/util"
+	"gomod.cblgh.org/lieu/types"
+	"gomod.cblgh.org/lieu/util"
 	"log"
 	"net/http"
 	"net/url"
@@ -24,6 +24,20 @@ func getBannedDomains(path string) []string {
 
 func getBannedSuffixes(path string) []string {
 	return util.ReadList(path, "\n")
+}
+
+// prevents us from crawling or logging data from e.g. voluminous pages like accidentally ending up in a repo,
+// tag categories, pages with only images
+func getBannedURLParts() []*regexp.Regexp {
+	parts := []string{"gallery",
+	"repo", "repos", "repository", "repositories",
+	"tags", "tag", "tagged", "t",
+	"commit", "commits"}
+	patterns := make([]*regexp.Regexp, 0, len(parts))
+	for _, part := range parts {
+		patterns = append(patterns, regexp.MustCompile(fmt.Sprintf(`https?:\/\/\S+\/%s\/\S+`, part)))
+	}
+	return patterns
 }
 
 func getBoringWords(path string) []string {
@@ -113,35 +127,27 @@ func findSuffix(suffixes []string, query string) bool {
 	return false
 }
 
-func cleanText(s string) string {
-	s = strings.TrimSpace(s)
-	s = strings.ReplaceAll(s, "\n", " ")
-	whitespace := regexp.MustCompile(`\p{Z}+`)
-	s = whitespace.ReplaceAllString(s, " ")
-	return s
-}
-
 func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []string) {
 	c.OnHTML("meta[name=\"keywords\"]", func(e *colly.HTMLElement) {
-		fmt.Println("keywords", cleanText(e.Attr("content")), e.Request.URL)
+		fmt.Println("keywords", util.CleanText(e.Attr("content")), e.Request.URL)
 	})
 
 	c.OnHTML("meta[name=\"description\"]", func(e *colly.HTMLElement) {
-		desc := cleanText(e.Attr("content"))
+		desc := util.CleanText(e.Attr("content"))
 		if len(desc) > 0 && len(desc) < 1500 {
 			fmt.Println("desc", desc, e.Request.URL)
 		}
 	})
 
 	c.OnHTML("meta[property=\"og:description\"]", func(e *colly.HTMLElement) {
-		ogDesc := cleanText(e.Attr("content"))
+		ogDesc := util.CleanText(e.Attr("content"))
 		if len(ogDesc) > 0 && len(ogDesc) < 1500 {
 			fmt.Println("og-desc", ogDesc, e.Request.URL)
 		}
 	})
 
 	c.OnHTML("html[lang]", func(e *colly.HTMLElement) {
-		lang := cleanText(e.Attr("lang"))
+		lang := util.CleanText(e.Attr("lang"))
 		if len(lang) > 0 && len(lang) < 100 {
 			fmt.Println("lang", lang, e.Request.URL)
 		}
@@ -149,7 +155,7 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 
 	// get page title
 	c.OnHTML("title", func(e *colly.HTMLElement) {
-		fmt.Println("title", cleanText(e.Text), e.Request.URL)
+		fmt.Println("title", util.CleanText(e.Text), e.Request.URL)
 	})
 
 	c.OnHTML("body", func(e *colly.HTMLElement) {
@@ -159,7 +165,7 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 			elements := e.DOM.Find(previewQueries[i])
 			for j := 0; j < 4 && j < elements.Length(); j++ {
 				element_text := elements.Slice(j, j+1).Text()
-				paragraph := cleanText(element_text)
+				paragraph := util.CleanText(element_text)
 				if len(paragraph) < 1500 && len(paragraph) > 20 {
 					if !util.Contains(heuristics, strings.ToLower(paragraph)) {
 						fmt.Println("para", paragraph, e.Request.URL)
@@ -168,9 +174,15 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 				}
 			}
 		}
-		paragraph := cleanText(e.DOM.Find("p").First().Text())
-		if len(paragraph) < 1500 && len(paragraph) > 0 {
-			fmt.Println("para-just-p", paragraph, e.Request.URL)
+
+		paragraphs := e.DOM.Find("p")
+		for i := 0; i < paragraphs.Length(); i++ {
+			paragraph := util.CleanTextStrict(paragraphs.Slice(i, i+1).Text())
+			if len(paragraph) < 1500 && len(paragraph) > 20 {
+				if !util.Contains(heuristics, strings.ToLower(paragraph)) {
+					fmt.Println("big-para", paragraph, e.Request.URL)
+				}
+			}
 		}
 
 		// get all relevant page headings
@@ -183,7 +195,7 @@ func handleIndexing(c *colly.Collector, previewQueries []string, heuristics []st
 func collectHeadingText(heading string, e *colly.HTMLElement) {
 	for _, headingText := range e.ChildTexts(heading) {
 		if len(headingText) < 500 {
-			fmt.Println(heading, cleanText(headingText), e.Request.URL)
+			fmt.Println(heading, util.CleanText(headingText), e.Request.URL)
 		}
 	}
 }
@@ -283,6 +295,9 @@ func Crawl(config types.Config) {
 	c.AllowedDomains = domains
 	c.AllowURLRevisit = false
 	c.DisallowedDomains = getBannedDomains(config.Crawler.BannedDomains)
+	// from colly's docs: "DisallowedURLFilters sets the list of regular expressions which restricts visiting URLs. If any of the rules
+	// matches to a URL the request will be stopped."
+	c.DisallowedURLFilters = getBannedURLParts()
 	c.IgnoreRobotsTxt = false
 
 	delay, _ := time.ParseDuration("200ms")

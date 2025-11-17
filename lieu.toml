@@ -1,10 +1,16 @@
 [general]
-name = "Sweet Webring"
+name = "Merveilles Webring"
+# used by the precrawl command and linked to in /about route
+url = "https://webring.xxiivv.com/"
+port = 10003
 tagline = "the search for the new—endless"
 placeholder = "Search"
-# used by the precrawl command and linked to in /about route
-url = "https://example.com/"
-port = 10001
+
+[theme]
+# colors specified in hex (or valid css names) which determine the theme of the lieu instance
+background = "#1E1F20"
+foreground = "#FFF" # "#FFCCBB"
+links = "#FF8000" # "#FFCCBB"  
 
 [data]
 # the source file should contain the crawl command's output 
@@ -27,5 +33,3 @@ bannedSuffixes = "data/banned-suffixes.txt"
 boringWords = "data/boring-words.txt"
 # domains that won't be output as outgoing links
 boringDomains = "data/boring-domains.txt"
-# queries to search for finding preview text
-previewQueryList = "data/preview-query-list.txt"

@@ -3,11 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"lieu/crawler"
-	"lieu/database"
-	"lieu/ingest"
-	"lieu/server"
-	"lieu/util"
+	"gomod.cblgh.org/lieu/crawler"
+	"gomod.cblgh.org/lieu/database"
+	"gomod.cblgh.org/lieu/ingest"
+	"gomod.cblgh.org/lieu/server"
+	"gomod.cblgh.org/lieu/util"
 	"os"
 	"strings"
 )

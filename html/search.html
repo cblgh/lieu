@@ -27,12 +27,16 @@
     {{ else }}
         <nav>
             <ul class="result-nav-list">
-                <li title="content from webring sites only"
+                <li title="find pages on webring sites"
                     class="{{ if .Data.IsInternal }} result__current {{ end }}">
-                    <a href="/?q={{ .Data.Query }}">Webring</a>
+                    <a href="/?q={{ .Data.Query }}">Links</a>
                 </li>
-                <li title="content linked from webring sites, but which reside outside it"
-                    class="{{ if .Data.IsInternal | not }} result__current {{ end }}">
+                <li title="explore deeper into the words contained on the webring sites"
+                    class="{{ if eq .Data.Title "Paragraph Search Results" }} result__current {{ end }}">
+                    <a href="/paragraph?q={{ .Data.Query }}">Paragraphs</a>
+                </li>
+                <li title="explore what the webring links to outside of itself"
+                    class="{{ if eq .Data.Title "External Results" }} result__current {{ end }}">
                     <a href="/outgoing?q={{ .Data.Query }}">Outgoing</a>
                 </li>
             </ul>
@@ -43,7 +47,10 @@
         {{ range $index, $a := .Data.Pages }}
             <li class="entry">
                 <a aria-described-by="link-{{ $index }}" class="entry__link" href="{{ .URL }}">{{ .Title }}</a>
-                <p id="link-{{ $index }}" class="entry__text">{{ .About }}</p>
+                <p id="link-{{ $index }}" class="entry__text"><i>{{ .About }}</i></p>
+                {{ if and (ne .ParagraphResult .About) (ne .ParagraphResult "") }}
+                <p id="link-{{ $index }}" class="entry__text">{{ .ParagraphResult }}</p>
+                {{ end }}
             </li>
         {{ end }}
         </ul>
