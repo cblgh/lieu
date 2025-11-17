@@ -133,7 +133,7 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 	h.renderView(res, "search", view)
 }
 
-func (h RequestHandler) externalSearchRoute(res http.ResponseWriter, req *http.Request) {
+func (h RequestHandler) paragraphSearchRoute(res http.ResponseWriter, req *http.Request) {
 	var query string
 	var domain string
 	view := &TemplateView{}
@@ -191,6 +191,37 @@ func (h RequestHandler) externalSearchRoute(res http.ResponseWriter, req *http.R
 		Title:      "Paragraph Search Results",
 		Site:       domain,
 		Query:      strings.Join(queryFields, " "),
+		Pages:      pages,
+		IsInternal: false,
+	}
+	h.renderView(res, "search", view)
+}
+
+func (h RequestHandler) externalSearchRoute(res http.ResponseWriter, req *http.Request) {
+	var query string
+	view := &TemplateView{}
+
+	if req.Method == http.MethodGet {
+		params := req.URL.Query()
+		if words, exists := params["q"]; exists && words[0] != "" {
+			query = words[0]
+		}
+	}
+
+	pages := database.FulltextSearchWords(h.db, query)
+
+	if useURLTitles {
+		for i, pageData := range pages {
+			prettyURL, err := url.QueryUnescape(strings.TrimPrefix(strings.TrimPrefix(pageData.URL, "http://"), "https://"))
+			util.Check(err)
+			pageData.Title = prettyURL
+			pages[i] = pageData
+		}
+	}
+
+	view.Data = SearchData{
+		Title:      "External Results",
+		Query:      query,
 		Pages:      pages,
 		IsInternal: false,
 	}
@@ -292,6 +323,7 @@ func Serve(config types.Config) {
 
 	http.HandleFunc("/about", handler.aboutRoute)
 	http.HandleFunc("/", handler.searchRoute)
+	http.HandleFunc("/paragraph", handler.paragraphSearchRoute)
 	http.HandleFunc("/outgoing", handler.externalSearchRoute)
 	http.HandleFunc("/random/outgoing", handler.randomExternalRoute)
 	http.HandleFunc("/random", handler.randomRoute)
