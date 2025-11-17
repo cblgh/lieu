@@ -11,17 +11,17 @@ type SearchFragment struct {
 }
 
 type WholeParagraph struct {
-	Text  string
-	URL   string
+	Text string
+	URL  string
 }
 
 type PageData struct {
-	URL         string
-	Title       string
-	About       string
+	URL             string
+	Title           string
+	About           string
 	ParagraphResult template.HTML
-	Lang        string
-	AboutSource string
+	Lang            string
+	AboutSource     string
 }
 
 type Config struct {

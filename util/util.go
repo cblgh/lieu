@@ -14,9 +14,9 @@ import (
 
 	"gomod.cblgh.org/lieu/types"
 
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/jinzhu/inflection"
 	"github.com/komkom/toml"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 func Inflect(words []string) []string {
@@ -130,7 +130,6 @@ func CleanText(s string) string {
 func CleanTextStrict(s string) string {
 	return contentPolicy.Sanitize(CleanText(s))
 }
-
 
 func Contains(arr []string, query string) bool {
 	for _, item := range arr {

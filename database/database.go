@@ -19,8 +19,8 @@ import (
 	"html/template"
 	"log"
 	"net/url"
-	"strings"
 	"regexp"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -170,12 +170,12 @@ func FulltextSearchWholeParagraphs(db *sql.DB, phrase string, domain []string, n
 	ORDER BY bs.rank LIMIT 30
 	`, strings.Join(domains, " OR "), strings.Join(nodomains, " AND "))
 
-	 // select word, url from inv_index where url = (select distinct url from inv_index limit 100);
+	// select word, url from inv_index where url = (select distinct url from inv_index limit 100);
 
 	// 1: SELECT HIGHLIGHT(big_search, 0, '<strong>', '</strong>'), url from big_search WHERE text MATCH ? ORDER BY rank LIMIT 30
-  //
+	//
 	// 2: SELECT HIGHLIGHT(big_search, 0, '<strong>', '</strong>'), url from big_search WHERE text MATCH ? GROUP BY url ORDER BY rank LIMIT 30
-  //
+	//
 	// 3: SELECT text, url from big_search WHERE text MATCH ? GROUP BY url ORDER BY rank LIMIT 30
 
 	stmt, err := db.Prepare(query)
@@ -188,7 +188,7 @@ func FulltextSearchWholeParagraphs(db *sql.DB, phrase string, domain []string, n
 
 	var pageData types.PageData
 	var pages []types.PageData
-	// `duplicates` keeps track of whether the same text has been returned already -> deduplicates search results. 
+	// `duplicates` keeps track of whether the same text has been returned already -> deduplicates search results.
 	//
 	// rationale: for the dataset i am testing this on (merveilles forum) the links to the same thread can change, and so
 	// it's more useful to track dupes on a per paragraph basis than per-url.
@@ -204,23 +204,23 @@ func FulltextSearchWholeParagraphs(db *sql.DB, phrase string, domain []string, n
 			// both About and the fts paragraph contain the same, null the about paragraph
 			// note: the crawled data represented by `unadornedParagarphMatch` has been run through bluemonday's strict
 			// santiization. this means a lot of html escapes are present in the text. in order to do a fair comparison, we
-			// need to run the same sanitzation on pageData.About for comparing purposes. 
+			// need to run the same sanitzation on pageData.About for comparing purposes.
 			//
-			// secondary note: pageData.About *does not* need to be sanitize - it is not rendered using the `unsafe` 
+			// secondary note: pageData.About *does not* need to be sanitize - it is not rendered using the `unsafe`
 			// template.HTML* type; golang's templates will autoescape its content as needed.
 			if strings.EqualFold(unadornedParagraphMatch, util.CleanTextStrict(pageData.About)) {
 				pageData.About = ""
 			}
-			// TODO (2024-10-10): surface search syntax legend (details/summary dropdown with pos absolute?) displaying 
+			// TODO (2024-10-10): surface search syntax legend (details/summary dropdown with pos absolute?) displaying
 			// tricks for links and paragraph search respectively
 
-			// TODO (2024-10-10): convert ParagraphResult to be []template.HTML and collect paragraphs per unique url. 
+			// TODO (2024-10-10): convert ParagraphResult to be []template.HTML and collect paragraphs per unique url.
 			// if a len(slice) > 1, render in template as <ul><li>..</li></ul> for all the paragraph matches (but not the pageData.About)
 			// example https://i.cblgh.org/2024-10/11788Ohq.png
 
 			// IDEA (2024-10-11): augment "links search" by using the results returned by it, to then perform a FTS search
-			// `where url = ? OR url = ? ..." for each url returned by the links search results. 
-			//  
+			// `where url = ? OR url = ? ..." for each url returned by the links search results.
+			//
 			// this offers a greater precision (maybe?) using the initial weighted ranking, and then gets us depth of results
 			// by running a constrained fts
 			pageData.URL = pageData.URL

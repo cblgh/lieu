@@ -30,9 +30,9 @@ func getBannedSuffixes(path string) []string {
 // tag categories, pages with only images
 func getBannedURLParts() []*regexp.Regexp {
 	parts := []string{"gallery",
-	"repo", "repos", "repository", "repositories",
-	"tags", "tag", "tagged", "t",
-	"commit", "commits"}
+		"repo", "repos", "repository", "repositories",
+		"tags", "tag", "tagged", "t",
+		"commit", "commits"}
 	patterns := make([]*regexp.Regexp, 0, len(parts))
 	for _, part := range parts {
 		patterns = append(patterns, regexp.MustCompile(fmt.Sprintf(`https?:\/\/\S+\/%s\/\S+`, part)))
