@@ -58,52 +58,45 @@ func main() {
 		}
 		crawler.Precrawl(config)
 	case "crawl":
-		exists := util.CheckFileExists(config.Crawler.Webring)
-		if !exists {
-			fmt.Printf("lieu: webring file %s does not exist\n", config.Crawler.Webring)
+		if exists := util.CheckFileExists(config.Crawler.Webring); !exists {
+			fmt.Printf("lieu: webring file %q does not exist\n", config.Crawler.Webring)
 			util.Exit()
 		}
 		sourceLen := len(util.ReadList(config.Crawler.Webring, "\n"))
 		if sourceLen == 0 {
-			fmt.Printf("lieu: nothing to crawl; the webring file %s is empty\n", config.Crawler.Webring)
+			fmt.Printf("lieu: nothing to crawl; the webring file %q is empty\n", config.Crawler.Webring)
 			util.Exit()
 		}
 		crawler.Crawl(config)
 	case "ingest":
-		exists := util.CheckFileExists(config.Data.Source)
-		if !exists {
+		if exists := util.CheckFileExists(config.Data.Source); !exists {
 			fmt.Printf("lieu: data source %s does not exist\n", config.Data.Source)
 			fmt.Println("lieu: try running `lieu crawl`")
 			util.Exit()
 		}
-		sourceLen := len(util.ReadList(config.Data.Source, "\n"))
-		if sourceLen == 0 {
-			fmt.Printf("lieu: nothing to ingest; data source %s is empty\n", config.Data.Source)
+		if sourceLen := len(util.ReadList(config.Data.Source, "\n")); sourceLen == 0 {
+			fmt.Printf("lieu: nothing to ingest; data source %q is empty\n", config.Data.Source)
 			fmt.Println("lieu: try running `lieu crawl`")
 			util.Exit()
 		}
 		fmt.Println("lieu: creating a new database & initiating ingestion")
 		ingest.Ingest(config)
 	case "search":
-		exists := util.CheckFileExists(config.Data.Database)
-		if !exists {
+		if exists := util.CheckFileExists(config.Data.Database); !exists {
 			util.DatabaseDoesNotExist(config.Data.Database)
 		}
 		interactiveMode(config.Data.Database)
 	case "random":
-		exists := util.CheckFileExists(config.Data.Database)
-		if !exists {
+		if exists := util.CheckFileExists(config.Data.Database); !exists {
 			util.DatabaseDoesNotExist(config.Data.Database)
 		}
 		db := database.InitDB(config.Data.Database)
 		fmt.Println(database.GetRandomPage(db))
 	case "host":
-		exists := util.CheckFileExists(config.Data.Database)
-		if !exists {
+		if exists := util.CheckFileExists(config.Data.Database); !exists {
 			util.DatabaseDoesNotExist(config.Data.Database)
 		}
-		open := util.CheckPortOpen(config.General.Port)
-		if !open {
+		if open := util.CheckPortOpen(config.General.Port); !open {
 			fmt.Printf("lieu: port %d is not open; try another one\n", config.General.Port)
 			util.Exit()
 		}
