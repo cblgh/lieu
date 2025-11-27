@@ -84,8 +84,8 @@ func getLink(target string) string {
 }
 
 func getWebringLinks(path string) []string {
-	var links []string
 	candidates := util.ReadList(path, "\n")
+	links := make([]string, 0, len(candidates))
 	for _, l := range candidates {
 		u, err := url.Parse(l)
 		if err != nil {
@@ -100,11 +100,11 @@ func getWebringLinks(path string) []string {
 }
 
 func getDomains(links []string) ([]string, []string) {
-	var domains []string
+	domains := make([]string, 0, len(links))
 	// sites which should have stricter crawling enforced (e.g. applicable for shared sites like tilde sites)
 	// pathsites are sites that are passed in which contain path,
 	// e.g. https://example.com/site/lupin -> only children pages of /site/lupin/ will be crawled
-	var pathsites []string
+	pathsites := make([]string, 0, len(links))
 	for _, l := range links {
 		u, err := url.Parse(l)
 		if err != nil {

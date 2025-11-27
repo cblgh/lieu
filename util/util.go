@@ -20,7 +20,7 @@ import (
 )
 
 func Inflect(words []string) []string {
-	var inflected []string
+	inflected := make([]string, 0, len(words))
 	for _, word := range words {
 		inflected = append(inflected, inflection.Singular(word))
 	}
@@ -224,7 +224,7 @@ func Exit() {
 
 func DeduplicateSlice(intSlice []string) []string {
 	keys := make(map[string]bool)
-	list := []string{}
+	list := make([]string, 0, len(intSlice))
 	for _, entry := range intSlice {
 		if _, value := keys[entry]; !value {
 			keys[entry] = true

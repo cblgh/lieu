@@ -129,7 +129,7 @@ func FulltextSearchWords(db *sql.DB, phrase string) []types.PageData {
 	defer rows.Close()
 
 	var pageData types.PageData
-	var pages []types.PageData
+	pages := make([]types.PageData, 0, 30)
 	for rows.Next() {
 		if err := rows.Scan(&pageData.URL); err != nil {
 			log.Fatalln(err)
@@ -394,7 +394,7 @@ func SearchWords(db *sql.DB, words []string, searchByScore bool, domain []string
 	defer rows.Close()
 
 	var pageData types.PageData
-	var pages []types.PageData
+	pages := make([]types.PageData, 0, 15)
 	for rows.Next() {
 		if err := rows.Scan(&pageData.URL, &pageData.About, &pageData.Title); err != nil {
 			log.Fatalln(err)

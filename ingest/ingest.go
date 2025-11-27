@@ -33,7 +33,7 @@ func partitionSentence(s string) []string {
 }
 
 func filterCommonWords(words, wordlist []string) []string {
-	var filtered []string
+	filtered := make([]string, 0, len(words))
 	for _, word := range words {
 		// ingested word was too common, skip it
 		if len(word) == 1 || find(wordlist, word) {
@@ -82,7 +82,7 @@ func Ingest(config types.Config) {
 	pages := make(map[string]types.PageData)
 	var count int
 	var batchsize = 100
-	batch := make([]types.SearchFragment, 0, 0)
+	batch := make([]types.SearchFragment, 0, batchsize)
 	var externalLinks []string
 	paragraphPairs := make([]types.WholeParagraph, 0, 0)
 
@@ -184,7 +184,7 @@ func Ingest(config types.Config) {
 			ingestBatch(db, batch, pages, externalLinks, paragraphPairs)
 			externalLinks = make([]string, 0, 0)
 			paragraphPairs = make([]types.WholeParagraph, 0, 0)
-			batch = make([]types.SearchFragment, 0, 0)
+			batch = make([]types.SearchFragment, 0, batchsize)
 			// TODO: make sure we don't partially insert any page data
 			pages = make(map[string]types.PageData)
 		}
