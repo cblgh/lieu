@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
 	"log"
 	"net"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
 
 	"gomod.cblgh.org/lieu/types"
 
@@ -117,8 +118,10 @@ func Humanize(n int) string {
 	return fmt.Sprintf("%d", n)
 }
 
-var contentPolicy = bluemonday.StrictPolicy() // remove all html tags and possible XSS from the input
-var whitespacePattern = regexp.MustCompile(`\p{Z}+`)
+var (
+	contentPolicy     = bluemonday.StrictPolicy() // remove all html tags and possible XSS from the input
+	whitespacePattern = regexp.MustCompile(`\p{Z}+`)
+)
 
 func CleanText(s string) string {
 	s = strings.TrimSpace(s)
@@ -214,7 +217,7 @@ boringDomains = "data/boring-domains.txt"
 # queries to search for finding preview text
 previewQueryList = "data/preview-query-list.txt"
 `)
-	err := ioutil.WriteFile("lieu.toml", conf, 0644)
+	err := ioutil.WriteFile("lieu.toml", conf, 0o644)
 	Check(err)
 }
 

@@ -3,13 +3,14 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"os"
+	"strings"
+
 	"gomod.cblgh.org/lieu/crawler"
 	"gomod.cblgh.org/lieu/database"
 	"gomod.cblgh.org/lieu/ingest"
 	"gomod.cblgh.org/lieu/server"
 	"gomod.cblgh.org/lieu/util"
-	"os"
-	"strings"
 )
 
 const help = `Lieu: neighbourhood search engine

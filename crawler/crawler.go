@@ -2,14 +2,15 @@ package crawler
 
 import (
 	"fmt"
-	"gomod.cblgh.org/lieu/types"
-	"gomod.cblgh.org/lieu/util"
 	"log"
 	"net/http"
 	"net/url"
 	"regexp"
 	"strings"
 	"time"
+
+	"gomod.cblgh.org/lieu/types"
+	"gomod.cblgh.org/lieu/util"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
@@ -29,10 +30,12 @@ func getBannedSuffixes(path string) []string {
 // prevents us from crawling or logging data from e.g. voluminous pages like accidentally ending up in a repo,
 // tag categories, pages with only images
 func getBannedURLParts() []*regexp.Regexp {
-	parts := []string{"gallery",
+	parts := []string{
+		"gallery",
 		"repo", "repos", "repository", "repositories",
 		"tags", "tag", "tagged", "t",
-		"commit", "commits"}
+		"commit", "commits",
+	}
 	patterns := make([]*regexp.Regexp, 0, len(parts))
 	for _, part := range parts {
 		patterns = append(patterns, regexp.MustCompile(fmt.Sprintf(`https?:\/\/\S+\/%s\/\S+`, part)))
@@ -310,7 +313,6 @@ func Crawl(config types.Config) {
 
 	// on every a element which has an href attribute, call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-
 		if e.Response.StatusCode >= 400 || e.Response.StatusCode <= 100 {
 			return
 		}

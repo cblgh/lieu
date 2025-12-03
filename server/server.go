@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"html/template"
 	"net/http"
 	"net/url"
 	"os"
@@ -13,7 +14,6 @@ import (
 	"gomod.cblgh.org/lieu/database"
 	"gomod.cblgh.org/lieu/types"
 	"gomod.cblgh.org/lieu/util"
-	"html/template"
 )
 
 type RequestHandler struct {
@@ -65,10 +65,10 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 	var domain string
 	view := &TemplateView{}
 
-	var domains = []string{}
-	var nodomains = []string{}
-	var langs = []string{}
-	var queryFields = []string{}
+	domains := []string{}
+	nodomains := []string{}
+	langs := []string{}
+	queryFields := []string{}
 
 	if req.Method == http.MethodGet {
 		params := req.URL.Query()
@@ -112,7 +112,7 @@ func (h RequestHandler) searchRoute(res http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	var pages = database.SearchWords(h.db, util.Inflect(queryFields), true, domains, nodomains, langs)
+	pages := database.SearchWords(h.db, util.Inflect(queryFields), true, domains, nodomains, langs)
 
 	if useURLTitles {
 		for i, pageData := range pages {
@@ -286,7 +286,7 @@ func (h RequestHandler) renderView(res http.ResponseWriter, tmpl string, view *T
 	view.SiteName = h.config.General.Name
 	var errTemp error
 	if _, exists := os.LookupEnv("LIEU_DEV"); exists {
-		var templates = template.Must(template.ParseFiles(
+		templates := template.Must(template.ParseFiles(
 			"html/head.html", "html/nav.html", "html/footer.html",
 			"html/about.html", "html/index.html", "html/list.html", "html/search.html", "html/webring.html"))
 		errTemp = templates.ExecuteTemplate(res, tmpl+".html", view)
@@ -312,7 +312,7 @@ func WriteTheme(config types.Config) {
   --secondary: %s;
   --link: %s;
 }`, theme.Foreground, theme.Background, theme.Links)
-	err := os.WriteFile("html/assets/theme.css", []byte(colors), 0644)
+	err := os.WriteFile("html/assets/theme.css", []byte(colors), 0o644)
 	util.Check(err)
 }
 

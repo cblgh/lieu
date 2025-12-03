@@ -4,15 +4,16 @@ import (
 	"bufio"
 	"database/sql"
 	"fmt"
-	"gomod.cblgh.org/lieu/database"
-	"gomod.cblgh.org/lieu/types"
-	"gomod.cblgh.org/lieu/util"
 	"log"
 	"net/url"
 	"os"
 	"regexp"
 	"strings"
 	"time"
+
+	"gomod.cblgh.org/lieu/database"
+	"gomod.cblgh.org/lieu/types"
+	"gomod.cblgh.org/lieu/util"
 
 	"github.com/jinzhu/inflection"
 )
@@ -81,7 +82,7 @@ func Ingest(config types.Config) {
 
 	pages := make(map[string]types.PageData)
 	var count int
-	var batchsize = 100
+	batchsize := 100
 	batch := make([]types.SearchFragment, 0, batchsize)
 	var externalLinks []string
 	paragraphPairs := make([]types.WholeParagraph, 0, 0)
@@ -96,7 +97,7 @@ func Ingest(config types.Config) {
 			continue
 		}
 
-		pageurl := strings.TrimSuffix(strings.TrimSpace(line[lastSpace:len(line)]), "/")
+		pageurl := strings.TrimSuffix(strings.TrimSpace(line[lastSpace:]), "/")
 		if !strings.HasPrefix(pageurl, "http") {
 			continue
 		}

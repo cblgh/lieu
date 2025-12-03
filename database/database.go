@@ -14,13 +14,14 @@ select url from inv_index where word = "<word>" group by url order by sum(score)
 import (
 	"database/sql"
 	"fmt"
-	"gomod.cblgh.org/lieu/types"
-	"gomod.cblgh.org/lieu/util"
 	"html/template"
 	"log"
 	"net/url"
 	"regexp"
 	"strings"
+
+	"gomod.cblgh.org/lieu/types"
+	"gomod.cblgh.org/lieu/util"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -41,7 +42,8 @@ func InitDB(filepath string) *sql.DB {
 
 func createTables(db *sql.DB) {
 	// create the table if it doesn't exist
-	queries := []string{`
+	queries := []string{
+		`
     CREATE TABLE IF NOT EXISTS domains (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         domain TEXT NOT NULL UNIQUE
@@ -354,7 +356,7 @@ func SearchWords(db *sql.DB, words []string, searchByScore bool, domain []string
 		}
 	}
 
-	//This needs some wildcard support …
+	// This needs some wildcard support …
 	languages := []string{"1"}
 	if len(language) > 0 && language[0] != "" {
 		languages = make([]string, 0)
