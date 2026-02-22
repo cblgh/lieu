@@ -1,15 +1,21 @@
 /* BASE OR CONFIG */
 
 :root {
-    --primary: #fefefe;
-    --secondary: #000;
-    --link: #fefefe;
+    --primary: #000;
+    --secondary: #fefefe;
+    --link: #000:
     /* alt colorscheme: 1 */
     /* --primary: red; */
     /* --secondary: #fefefe; */
     /* alt colorscheme: 2 */
     /* --primary: #F35363; */
     /* --secondary: black; */
+
+    @media (prefers-color-scheme: dark) {
+        --primary: #fefefe;
+        --secondary: #000;
+        --link: #fefefe;
+    }
 }
 
 /* Font-size 62.5% allows using rems as pixels. For ex: 1.6rem = 16px. Way es */
